@@ -15,9 +15,6 @@ object project2{
     println("Created Spark session\n")
     spark.sparkContext.setLogLevel("ERROR")
 
-    val sparkqueries = new SparkQueries(spark)
-    sparkqueries.Querry1()
-    sparkqueries.Querry2()
 
   }
   //Sets up the spark environment
