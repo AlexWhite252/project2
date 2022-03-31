@@ -11,4 +11,6 @@ object project2 extends App {
     .getOrCreate()
   println("Created Spark session\n")
   spark.sparkContext.setLogLevel("ERROR")
+
+
 }
