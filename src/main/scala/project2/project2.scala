@@ -8,7 +8,7 @@ object project2{
     System.setProperty("hadoop.home.dir", "C:\\hadoop")
     val spark = SparkSession
       .builder
-      .appName("IGDB query")
+      .appName("COVID data query")
       .config("spark.master", "local[*]")
       .enableHiveSupport()
       .getOrCreate()
