@@ -15,7 +15,7 @@ object Menus {
     - Let's set up a date filter that can grab an earliest and latest date for a query
    */
 
-  def MainMenu(util:String): Unit = {
+  def MainMenu(util:SparkSession): Unit = {
     println("Welcome.")
     var quit = false
     do {
@@ -28,7 +28,7 @@ object Menus {
     } while (!quit)
   }
 
-  def DataMenu(util:String): Unit ={
+  def DataMenu(util:SparkSession): Unit ={
     println("Filter?")
     var back = false
     do {
@@ -43,7 +43,7 @@ object Menus {
     } while (!back)
   }
 
-  def FilterMenu(util:String, filter:String): Unit ={
+  def FilterMenu(util:SparkSession, filter:String): Unit ={
     filter match {
       case "country/region" => {
         println("What country/region would you like to filter by?")
@@ -57,7 +57,7 @@ object Menus {
     }
   }
 
-  def SortMenu(util:String, filter:String, filterNote:String): Unit ={
+  def SortMenu(util:SparkSession, filter:String, filterNote:String): Unit ={
     var where = ""
     if(filter!="") where = s" WHERE $filter=='$filterNote'"
     var sort = ""
@@ -87,7 +87,9 @@ object Menus {
     GetQuery(util,where,sort,acdc)
   }
 
-  def GetQuery(util:String,where:String,sort:String,asc:String): Unit = {
-    println(s"SELECT * FROM covid19data$where$sort$asc\n")
+  def GetQuery(util:SparkSession,where:String,sort:String,asc:String): Unit = {
+    val query = s"SELECT * FROM covid19data$where$sort$asc"
+    println(s"$query\n")
+    util.sql(query).show(false)
   }
 }
