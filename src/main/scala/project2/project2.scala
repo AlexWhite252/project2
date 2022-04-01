@@ -15,7 +15,13 @@ object project2{
     println("Created Spark session\n")
     spark.sparkContext.setLogLevel("ERROR")
 
+    val coto = spark.read.option("header","true").csv(System.getProperty("user.dir")+"\\data\\covid_19_data.csv")
+    coto.createOrReplaceTempView("covid19data")
 
+    //testing my menu
+    Menus.MainMenu(spark)
+
+    //spark.read.csv(System.getProperty("user.dir")+"\\data\\covid_19_data.csv")
   }
   //Sets up the spark environment
 }
