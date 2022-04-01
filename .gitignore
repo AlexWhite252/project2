@@ -1,3 +1,4 @@
-target/
+target*
 metastore_db*
-.idea/
+.idea/modules*
+project/target*
