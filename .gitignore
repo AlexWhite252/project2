@@ -1,4 +1,4 @@
+target*
 metastore_db*
-*.iml
-target/
-project/target/
+.idea/modules*
+project/target*
