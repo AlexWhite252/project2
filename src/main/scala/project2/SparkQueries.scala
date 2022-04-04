@@ -4,6 +4,14 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
 
 class SparkQueries(spark:SparkSession) {
+
+  val covid: DataFrame =spark.read.format("csv")
+    .option("delimiter", ",")
+    .option("header", "true")
+    .option("inferSchema", "true")
+    .load("data/covid_19_data.csv")
+  covid.createOrReplaceTempView("covid19data")
+
   import spark.implicits._
   //Create your querries in separate functions like this
   //Alternatively name them like mynameQuery1,mynameQuery2 ect...
