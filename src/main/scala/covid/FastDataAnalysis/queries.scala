@@ -1,3 +1,4 @@
+package covid.FastDataAnalysis
 class queries {
 
   var s = new Sparker

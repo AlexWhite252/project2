@@ -1,3 +1,4 @@
+package covid.FastDataAnalysis
 class CountryBuilder(name:String) {
 
 

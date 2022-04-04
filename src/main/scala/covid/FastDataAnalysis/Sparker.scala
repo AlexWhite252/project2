@@ -1,3 +1,4 @@
+package covid.FastDataAnalysis
 import org.apache.spark.sql.SparkSession
 
 class Sparker {
