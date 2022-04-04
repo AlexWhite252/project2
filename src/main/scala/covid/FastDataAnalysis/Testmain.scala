@@ -1,3 +1,4 @@
+package covid.FastDataAnalysis
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 
@@ -57,7 +58,7 @@ object Testmain {
         val input1 = scala.io.StdIn.readLine("~~~Compare UI Init~~~\n Please pick 2 Countries from the List above\n Entry1: ")
         val input2 = scala.io.StdIn.readLine("\nEntry2:")
         val input3 = scala.io.StdIn.readLine("\n And what would you like to compare? \nEntry:")
-        var countryfight = new CountryVsCountry(input1,input2).compare(input3)
+        //var countryfight = new CountryVsCountry(input1,input2).compare(input3)
         Count = Count +1
       }
     }

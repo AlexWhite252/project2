@@ -45,7 +45,7 @@ class CountryVsCountry() {
       var countriesName= new String
 
 
-      countries.foreach(countryNames => String)
+      //countries.foreach(countryNames => String)
 
 
 
