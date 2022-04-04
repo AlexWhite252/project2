@@ -1,6 +1,7 @@
 package project2
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{SaveMode, SparkSession}
+
 import scala.io.StdIn.readLine
 
 object Menus {
@@ -13,14 +14,13 @@ object Menus {
   } */
 
   /*
-  TODO: By Monday
-    - Let's set up a date filter that can grab an earliest and latest date for a query
-    - Convert everything and do a proper sql query through our menu.
+  TODO:
+    - Date filter (Earliest/Latest dates)
 
-   TODO: Future
-    - Delete / Update compat?
-    - ???
-    - Profit.
+  CURRENT:
+    - All menus and filters functional
+    - Sorting functional
+    - Exporting functional (although messy, because spark messy??)
    */
 
   def MainMenu(util: SparkSession): Unit = {
@@ -104,12 +104,14 @@ object Menus {
     println("[as JSON | as CSV | No]") // It doesn't overwrite files yet. Will work on.
     readLine.toLowerCase match {
       case "json" | "as json" => {
-        val outpo = util.sql(query)
-        outpo.write.json(System.getProperty("user.dir")+"\\export\\covid19data.json")
+        val tempy = util.sql(query) // take the query into an rdd/df
+        val outpo = tempy.repartition(1) // repartition it so it makes only 1 file
+        outpo.write.mode(SaveMode.Overwrite).json(System.getProperty("user.dir")+"\\export\\covid19data.json") // save the file
       }
-      case "csv" | "as csv" => {
-        val outpo = util.sql(query)
-        outpo.write.csv(System.getProperty("user.dir")+"\\export\\covid19data.csv")
+      case "csv" | "as csv" => { // repeat from json, but as a csv
+        val tempy = util.sql(query)
+        val outpo = tempy.repartition(1)
+        outpo.write.mode(SaveMode.Overwrite).csv(System.getProperty("user.dir")+"\\export\\covid19data.csv")
       }
       case _ => // nothing, we're leaving
     }
