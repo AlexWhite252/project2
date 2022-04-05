@@ -7,7 +7,7 @@ Analysis and processing of COVID-19 data using Spark
 - 10 queries
 	- (INSERT QUERIES)
 - Implement logging (with Spark)
-- Use Zeppelin to show trends (SOME IDEAS)
+- Use Tableau to show trends (SOME IDEAS)
 	- Confirmed cases in China vs other countries?
 	- Locations with most cases in given time frame?
 
