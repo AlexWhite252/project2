@@ -18,7 +18,7 @@ Analysis and processing of COVID-19 data using Spark
 - HDFS
 - SBT
 - Scala 2.12.10
-- Zeppelin
+- Tableau
 
 ## Stretch Goals
 - (INSERT GOALS)
