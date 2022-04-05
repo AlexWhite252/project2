@@ -14,7 +14,8 @@ object project2{
     println("Created Spark session\n")
     spark.sparkContext.setLogLevel("ERROR")
     val sq = new SparkQueries(spark)
-    sq.topRecovered()
+    sq.confirmedFirst()
+    //sq.confirmedLast()
 
   }
 }
