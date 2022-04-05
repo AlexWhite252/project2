@@ -41,7 +41,7 @@ class SparkQueries(spark:SparkSession) {
   }
   def topRecovered(): Unit = {
     /*---Top 10 recovered across countries---*/
-    spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Recovered) AS Recovered FROM covid19data WHERE Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Recovered DESC LIMIT 10").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/TopRecovered")
+    DFWriter.Write("data/TopRecovered",spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Recovered) AS Recovered FROM covid19data WHERE Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Recovered DESC LIMIT 10"))
   }
   def bottomRecovered(): Unit = {
     /*---Bottom 10 recovered across countries---*/

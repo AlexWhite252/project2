@@ -1,7 +1,6 @@
 package covid
 // Last updated 4/4/2022
 import org.apache.spark.sql.SparkSession
-
 object project2{
 
   def main(args: Array[String]): Unit = {
@@ -14,5 +13,8 @@ object project2{
       .getOrCreate()
     println("Created Spark session\n")
     spark.sparkContext.setLogLevel("ERROR")
+    val sq = new SparkQueries(spark)
+    sq.topRecovered()
+
   }
 }
