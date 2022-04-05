@@ -1,3 +1,4 @@
 target*
 metastore_db*
 project/target*
+derby.log
