@@ -24,12 +24,34 @@ class SparkQueries(spark:SparkSession) {
   def confirmedFirst(): Unit = {
     /*---Confirmed cases, deaths, recovered within FIRST 4 months---*/
     /*---Might need some tweaking because I get multiple countries per month but I have this so far---*/
-    spark.sql("SELECT DISTINCT MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number,Country_Region AS Country,Confirmed,Deaths,Recovered FROM covid19data WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' ORDER BY Month_Number").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedFirst")
+    /*-- Reid: If I remembered wrong and the confirmed,deaths, and recovered aren't the amount  for that date
+     * -- but an aggregation of all the numbers before it ie: day 1 and day 2 each had only 1 death
+     * -- but on day 2 it shows 2 in deaths instead of 1
+     * -- if that's the case change the SUM to MAX instead*/
+    val df =spark.sql("SELECT DISTINCT " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "FROM covid19data " +
+      "WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' " +
+      "GROUP BY Month_Number,Country " +
+      "ORDER BY Month_Number").toDF()
+    //DFWriter.Write(path,df)
   }
   def confirmedLast(): Unit = {
     /*---Confirmed cases, deaths, recovered within LAST 4 months---*/
     /*---Might need some tweaking because I get multiple countries per month but I have this so far---*/
-    spark.sql("SELECT DISTINCT MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number,Country_Region AS Country,Confirmed,Deaths,Recovered FROM covid19data WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' ORDER BY Month_Number").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedFirst")
+    /*-- Reid: If I remembered wrong and the confirmed,deaths, and recovered aren't the amount  for that date
+    * -- but an aggregation of all the numbers before it ie: day 1 and day 2 each had only 1 death
+    * -- but on day 2 it shows 2 in deaths instead of 1
+    * -- if that's the case change the SUM to MAX instead*/
+    val df=spark.sql("SELECT DISTINCT " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "FROM covid19data " +
+      "WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' " +
+      "GROUP BY Month_Number,Country " +
+      "ORDER BY Month_Number").toDF()
+    //DFWriter.Write(path,df)
   }
   def confirmedChina(): Unit = {
     /*---Confirmed in China then other countries---*/
