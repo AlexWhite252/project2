@@ -23,16 +23,17 @@ class SparkQueries(spark:SparkSession) {
   //ect...
   def confirmedFirst(): Unit = {
     /*---Confirmed cases, deaths, recovered within FIRST 4 months---*/
-    /*---Change table to Month,Country,Confirmed,Deaths,Recovered---*/
-    spark.sql("SELECT DISTINCT COUNT(Country_Region) AS Countries,SUM(Confirmed) AS Confirmed_Cases,SUM(Deaths) AS Deaths,SUM(Recovered) AS Recovered FROM covid19data WHERE ObservationDate BETWEEN '01/22/2020' AND '05/22/2020' AND Last_Update='2021-05-03 04:20:39'").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedFirst")
+    /*---Might need some tweaking because I get multiple countries per month but I have this so far---*/
+    spark.sql("SELECT DISTINCT MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number,Country_Region AS Country,Confirmed,Deaths,Recovered FROM covid19data WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' ORDER BY Month_Number").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedFirst")
   }
   def confirmedLast(): Unit = {
     /*---Confirmed cases, deaths, recovered within LAST 4 months---*/
-    /*---Change table to Month,Country,Confirmed,Deaths,Recovered---*/
-    spark.sql("SELECT DISTINCT COUNT(Country_Region) AS Countries,SUM(Confirmed) AS Confirmed_Cases,SUM(Deaths) AS Deaths,SUM(Recovered) AS Recovered FROM covid19data WHERE ObservationDate BETWEEN '01/02/2021' AND '05/02/2021' AND Last_Update='2021-05-03 04:20:39'").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedLast")
+    /*---Might need some tweaking because I get multiple countries per month but I have this so far---*/
+    spark.sql("SELECT DISTINCT MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number,Country_Region AS Country,Confirmed,Deaths,Recovered FROM covid19data WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' ORDER BY Month_Number").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedFirst")
   }
   def confirmedChina(): Unit = {
     /*---Confirmed in China then other countries---*/
+    /*---Do we need SUM()?? with the way the data is formatted..---*/
     spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Confirmed) AS Confirmed from covid19data where Country_Region == 'Mainland China' AND Last_Update='2021-05-03 04:20:39' GROUP BY Country UNION SELECT DISTINCT Country_Region as Country,SUM(Confirmed)as not from covid19data where Country_Region != 'Mainland China' AND Last_Update='2021-05-03 04:20:39' GROUP BY Country").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("src/main/Data/ConfirmedChina")
     /*---Confirmed in China w/ country count confirmed---*/
     spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Confirmed) AS Confirmed from covid19data where Country_Region == 'Mainland China' AND Last_Update='2021-05-03 04:20:39' GROUP BY Country UNION SELECT DISTINCT COUNT(Country_Region) as Country,SUM(Confirmed)as not from covid19data where Country_Region != 'Mainland China' AND Last_Update='2021-05-03 04:20:39'").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("src/main/Data/ConfirmedChinaVsCount")
@@ -44,7 +45,7 @@ class SparkQueries(spark:SparkSession) {
   }
   def topRecovered(): Unit = {
     /*---Top 10 recovered across countries---*/
-    /*---Might need to alter due to large numbers but I will look at/fix tomorrow (might not need SUM())?---*/
+    /*---Might need to alter due to large numbers (might not need SUM())?---*/
     spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Recovered) AS Recovered FROM covid19data WHERE Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Recovered DESC LIMIT 10").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/TopRecovered")
   }
   def bottomRecovered(): Unit = {
