@@ -1,5 +1,6 @@
-package project2
+package covid
 
+import covid.DFWriter
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
 
@@ -35,7 +36,7 @@ class SparkQueries(spark:SparkSession) {
       "WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' " +
       "GROUP BY Month_Number,Country " +
       "ORDER BY Month_Number").toDF()
-    //DFWriter.Write(path,df)
+      DFWriter.Write("data/First",df)
   }
   def confirmedLast(): Unit = {
     /*---Confirmed cases, deaths, recovered within LAST 4 months---*/
@@ -51,7 +52,17 @@ class SparkQueries(spark:SparkSession) {
       "WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' " +
       "GROUP BY Month_Number,Country " +
       "ORDER BY Month_Number").toDF()
-    //DFWriter.Write(path,df)
+    DFWriter.Write("data/Last",df)
+  }
+  def Overview(): Unit={
+    val df =spark.sql("SELECT DISTINCT " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "FROM covid19data " +
+      "WHERE ObservationDate BETWEEN '01/22/2020' AND '12/30/2020' " +
+      "GROUP BY Month_Number,Country " +
+      "ORDER BY Month_Number").toDF()
+    DFWriter.Write("data/Year",df)
   }
   def confirmedChina(): Unit = {
     /*---Confirmed in China then other countries---*/
