@@ -7,7 +7,7 @@ import scala.io.StdIn.readLine
 
 object Menus {
   // DEBUG MAIN
-  // /*
+  /*
   def main(args: Array[String]): Unit = {
     System.setProperty("hadoop.home.dir", "C:\\hadoop")
     val spark = SparkSession
