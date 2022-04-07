@@ -1,5 +1,5 @@
 package covid
-// Last updated 4/4/2022
+// Last updated 4/7/2022
 import org.apache.spark.sql.SparkSession
 object project2{
 
