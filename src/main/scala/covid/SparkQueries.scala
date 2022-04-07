@@ -1,5 +1,6 @@
 package project2
 
+import covid.DFWriter
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
 
@@ -23,16 +24,49 @@ class SparkQueries(spark:SparkSession) {
   //ect...
   def confirmedFirst(): Unit = {
     /*---Confirmed cases, deaths, recovered within FIRST 4 months---*/
-    /*---Change table to Month,Country,Confirmed,Deaths,Recovered---*/
-    spark.sql("SELECT DISTINCT COUNT(Country_Region) AS Countries,SUM(Confirmed) AS Confirmed_Cases,SUM(Deaths) AS Deaths,SUM(Recovered) AS Recovered FROM covid19data WHERE ObservationDate BETWEEN '01/22/2020' AND '05/22/2020' AND Last_Update='2021-05-03 04:20:39'").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedFirst")
+    /*---Might need some tweaking because I get multiple countries per month but I have this so far---*/
+    /*-- Reid: If I remembered wrong and the confirmed,deaths, and recovered aren't the amount  for that date
+     * -- but an aggregation of all the numbers before it ie: day 1 and day 2 each had only 1 death
+     * -- but on day 2 it shows 2 in deaths instead of 1
+     * -- if that's the case change the SUM to MAX instead*/
+    val df =spark.sql("SELECT DISTINCT " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "FROM covid19data " +
+      "WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' " +
+      "GROUP BY Month_Number,Country " +
+      "ORDER BY Month_Number").toDF()
+      DFWriter.Write("data/First",df)
   }
   def confirmedLast(): Unit = {
     /*---Confirmed cases, deaths, recovered within LAST 4 months---*/
-    /*---Change table to Month,Country,Confirmed,Deaths,Recovered---*/
-    spark.sql("SELECT DISTINCT COUNT(Country_Region) AS Countries,SUM(Confirmed) AS Confirmed_Cases,SUM(Deaths) AS Deaths,SUM(Recovered) AS Recovered FROM covid19data WHERE ObservationDate BETWEEN '01/02/2021' AND '05/02/2021' AND Last_Update='2021-05-03 04:20:39'").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/ConfirmedLast")
+    /*---Might need some tweaking because I get multiple countries per month but I have this so far---*/
+    /*-- Reid: If I remembered wrong and the confirmed,deaths, and recovered aren't the amount  for that date
+    * -- but an aggregation of all the numbers before it ie: day 1 and day 2 each had only 1 death
+    * -- but on day 2 it shows 2 in deaths instead of 1
+    * -- if that's the case change the SUM to MAX instead*/
+    val df=spark.sql("SELECT DISTINCT " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "FROM covid19data " +
+      "WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' " +
+      "GROUP BY Month_Number,Country " +
+      "ORDER BY Month_Number").toDF()
+    DFWriter.Write("data/Last",df)
+  }
+  def Overview(): Unit={
+    val df =spark.sql("SELECT DISTINCT " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "FROM covid19data " +
+      "WHERE ObservationDate BETWEEN '01/22/2020' AND '12/30/2020' " +
+      "GROUP BY Month_Number,Country " +
+      "ORDER BY Month_Number").toDF()
+    DFWriter.Write("data/Year",df)
   }
   def confirmedChina(): Unit = {
     /*---Confirmed in China then other countries---*/
+    /*---Do we need SUM()?? with the way the data is formatted..---*/
     spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Confirmed) AS Confirmed from covid19data where Country_Region == 'Mainland China' AND Last_Update='2021-05-03 04:20:39' GROUP BY Country UNION SELECT DISTINCT Country_Region as Country,SUM(Confirmed)as not from covid19data where Country_Region != 'Mainland China' AND Last_Update='2021-05-03 04:20:39' GROUP BY Country").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("src/main/Data/ConfirmedChina")
     /*---Confirmed in China w/ country count confirmed---*/
     spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Confirmed) AS Confirmed from covid19data where Country_Region == 'Mainland China' AND Last_Update='2021-05-03 04:20:39' GROUP BY Country UNION SELECT DISTINCT COUNT(Country_Region) as Country,SUM(Confirmed)as not from covid19data where Country_Region != 'Mainland China' AND Last_Update='2021-05-03 04:20:39'").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("src/main/Data/ConfirmedChinaVsCount")
