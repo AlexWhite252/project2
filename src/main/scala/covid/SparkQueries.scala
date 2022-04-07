@@ -1,4 +1,4 @@
-package project2
+package covid
 
 import covid.DFWriter
 import org.apache.spark.sql.SparkSession
