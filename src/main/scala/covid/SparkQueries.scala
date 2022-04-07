@@ -54,6 +54,24 @@ class SparkQueries(spark:SparkSession) {
       "ORDER BY Month_Number").toDF()
     DFWriter.Write("data/Last",df)
   }
+  def ChinaVsTheWorld(): Unit={
+    val df =spark.sql(
+      "SELECT 'China' AS Country, ObservationDate as Date, SUM(Confirmed) as Confirmed, " +
+        "SUM(Deaths) AS Deaths,SUM(Recovered) AS Recovered " +
+        "FROM covid19data " +
+        "WHERE Country_Region='Mainland China' " +
+        "GROUP BY Country,Date " +
+        //"ORDER BY Date " +
+        "UNION " +
+        "SELECT 'World' AS Country, ObservationDate as Date, AVG(Confirmed) AS Confirmed, AVG(Deaths) as Deaths, " +
+        "AVG(Recovered) as Recovered " +
+        "FROM covid19Data " +
+        "WHERE Country_Region!='Mainland China' " +
+        "GROUP BY Country,Date " +
+        "ORDER BY Date"
+    )
+    DFWriter.Write("data/ChinaVsTheWorld",df)
+  }
   def Overview(): Unit={
     val df =spark.sql("SELECT DISTINCT " +
       "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
