@@ -9,3 +9,5 @@ data/old_covid_19_data.csv
 data/Year.csv
 data/ChinasSadLittleLife.csv
 data/ChinaVsTheWorld.csv
+data/TopDeaths.csv
+data/TopRecovered.csv
