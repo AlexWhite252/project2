@@ -3,6 +3,8 @@ package covid
 import covid.DFWriter
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions.{col, to_date}
+import org.apache.spark.sql.types.DateType
 
 class SparkQueries(spark:SparkSession) {
 
@@ -10,7 +12,10 @@ class SparkQueries(spark:SparkSession) {
     .option("delimiter", ",")
     .option("header", "true")
     .option("inferSchema", "true")
-    .load("data/covid_19_data.csv")
+    .load("data/covid_19_data.csv").select(
+    col("SNo"),col("Province_State"),col("Country_Region"),col("Confirmed"),
+    col("Deaths"),col("Recovered"),
+    to_date(col("ObservationDate"),"MM/dd/yyyy").as("ObservationDate"))
   covid.createOrReplaceTempView("covid19data")
 
   import spark.implicits._
@@ -29,11 +34,11 @@ class SparkQueries(spark:SparkSession) {
      * -- but an aggregation of all the numbers before it ie: day 1 and day 2 each had only 1 death
      * -- but on day 2 it shows 2 in deaths instead of 1
      * -- if that's the case change the SUM to MAX instead*/
-    val df =spark.sql("SELECT DISTINCT " +
+    val df =spark.sql("SELECT " +
       "ObservationDate AS Date, " +
       "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
       "FROM covid19data " +
-      "WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' AND ObservationDate < '05/01/2020' " +
+      "WHERE ObservationDate BETWEEN '2020-01-22' AND '2020-04-30' " +
       "GROUP BY Date,Country " +
       "ORDER BY Date").toDF()
       DFWriter.Write("data/First",df)
@@ -49,7 +54,7 @@ class SparkQueries(spark:SparkSession) {
       "ObservationDate AS Date, " +
       "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
       "FROM covid19data " +
-      "WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' " +
+      "WHERE ObservationDate BETWEEN '2021-02-02' AND '2021-05-02' " +
       "GROUP BY Date,Country " +
       "ORDER BY Date").toDF()
     DFWriter.Write("data/Last",df)
