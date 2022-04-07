@@ -57,7 +57,7 @@ class SparkQueries(spark:SparkSession) {
   def Overview(): Unit={
     val df =spark.sql("SELECT DISTINCT " +
       "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
-      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
+      "Country_Region AS Country,MAX(Confirmed) as Confirmed,MAX(Deaths) as Deaths,MAX(Recovered) as Recovered " +
       "FROM covid19data " +
       "WHERE ObservationDate BETWEEN '01/22/2020' AND '12/30/2020' " +
       "GROUP BY Month_Number,Country " +
