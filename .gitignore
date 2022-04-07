@@ -5,3 +5,6 @@ derby.log
 target/scala-2.11/classes/covid/project2$.class
 target/scala-2.11/classes/covid/SparkQueries$$typecreator5$1.class
 target/scala-2.11/classes/covid/SparkQueries.class
+data/ChinasSadLittleLife.csv
+data/ChinaVsTheWorld.csv
+data/Year.csv
