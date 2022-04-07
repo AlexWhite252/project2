@@ -51,7 +51,7 @@ class SparkQueries(spark:SparkSession) {
     * -- but on day 2 it shows 2 in deaths instead of 1
     * -- if that's the case change the SUM to MAX instead*/
     val df=spark.sql("SELECT DISTINCT " +
-      "ObservationDate AS Date, " +
+      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
       "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
       "FROM covid19data " +
       "WHERE ObservationDate BETWEEN '2021-02-02' AND '2021-05-02' " +
@@ -59,28 +59,10 @@ class SparkQueries(spark:SparkSession) {
       "ORDER BY Date").toDF()
     DFWriter.Write("data/Last",df)
   }
-  def ChinaVsTheWorld(): Unit={
-    val df =spark.sql(
-      "SELECT 'China' AS Country, ObservationDate as Date, SUM(Confirmed) as Confirmed, " +
-        "SUM(Deaths) AS Deaths,SUM(Recovered) AS Recovered " +
-        "FROM covid19data " +
-        "WHERE Country_Region='Mainland China' " +
-        "GROUP BY Country,Date " +
-        //"ORDER BY Date " +
-        "UNION " +
-        "SELECT 'World' AS Country, ObservationDate as Date, AVG(Confirmed) AS Confirmed, AVG(Deaths) as Deaths, " +
-        "AVG(Recovered) as Recovered " +
-        "FROM covid19Data " +
-        "WHERE Country_Region!='Mainland China' " +
-        "GROUP BY Country,Date " +
-        "ORDER BY Date"
-    )
-    DFWriter.Write("data/ChinaVsTheWorld",df)
-  }
   def Overview(): Unit={
     val df =spark.sql("SELECT DISTINCT " +
       "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
-      "Country_Region AS Country,MAX(Confirmed) as Confirmed,MAX(Deaths) as Deaths,MAX(Recovered) as Recovered " +
+      "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
       "FROM covid19data " +
       "WHERE ObservationDate BETWEEN '01/22/2020' AND '12/30/2020' " +
       "GROUP BY Month_Number,Country " +
@@ -121,18 +103,8 @@ class SparkQueries(spark:SparkSession) {
   }
   def topDeaths(): Unit = {
     /*---Top 10 deaths across countries---*/
-    spark.sql(
-      "SELECT DISTINCT Country_Region AS Country,MAX(Deaths) AS Deaths " +
-        "FROM covid19data " +
-        "GROUP BY Country_Region " +
-        "ORDER BY Deaths DESC LIMIT 10").createOrReplaceTempView("topDeaths")
-    val df=spark.sql(
-      "SELECT Country_Region AS Country, ObservationDate as Date, SUM(cd.Deaths) AS Deaths FROM covid19data cd " +
-        "JOIN topDeaths td ON td.Country=cd.Country_Region " +
-        "GROUP BY cd.Country_Region,cd.ObservationDate " +
-        "ORDER BY cd.ObservationDate"
-    ).toDF()
-    DFWriter.Write("data/topDeaths",df)  }
+    spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Deaths) AS Deaths FROM covid19data WHERE Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Deaths DESC LIMIT 10").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/TopDeaths")
+  }
   def bottomDeaths(): Unit = {
     /*---Bottom 10 deaths across countries---*/
     spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Deaths) AS Deaths FROM covid19data WHERE Deaths>0 AND Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Deaths ASC LIMIT 10").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/BottomDeaths")
