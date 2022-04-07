@@ -1,3 +1,8 @@
+package project2.`FastDataAnalysis(WIP)`
+
+
+
+
 class queries {
 
   var s = new Sparker
@@ -8,6 +13,10 @@ class queries {
     s.spark().sql(s"Select * from $tableName")
   }
 
+ def selectAllCountryNames(): Unit =
+  {
+    s.spark().sql("Select Distinct Country_Region from covid19data order by Country_Region").show(10000000,false )
+  }
 
   def JoinTwoTables(Table1:String,Table2:String,Table1JoinColumn:String,Table2JoinColumn:String,Column1:String): Unit =
   {

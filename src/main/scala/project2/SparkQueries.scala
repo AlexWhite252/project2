@@ -9,7 +9,7 @@ class SparkQueries(spark:SparkSession) {
     .option("delimiter", ",")
     .option("header", "true")
     .option("inferSchema", "true")
-    .load("data/covid_19_data.csv")
+    .load("covid_19_data.csv")
   covid.createOrReplaceTempView("covid19data")
 
   import spark.implicits._
@@ -51,7 +51,11 @@ class SparkQueries(spark:SparkSession) {
   }
   def bottomDeaths(): Unit = {
     /*---Bottom 10 deaths across countries---*/
-    spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Deaths) AS Deaths FROM covid19data WHERE Deaths>0 AND Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Deaths ASC LIMIT 10").write.option("delimiter", ",").option("header", "true").option("inferSchema", "true").mode("overwrite").csv("data/BottomDeaths")
+    spark.sql("SELECT Country_Region AS Country,Sum(Deaths) as Deaths FROM covid19data WHERE deaths !=0 and Last_Update = '2021-05-03' GROUP BY Country_Region ORDER BY Deaths ").show(10, false)
+
+
+    spark.sql("SELECT Country_Region as Country, SUM(Deaths) As Deaths From covid19data where Country_Region ='Mainland China' and Last_Update = '2021-05-03' GROUP BY Country_Region").show(false)
+
   }
 }
 

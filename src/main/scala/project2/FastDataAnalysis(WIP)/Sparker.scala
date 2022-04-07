@@ -1,3 +1,6 @@
+package project2.`FastDataAnalysis(WIP)`
+
+
 import org.apache.spark.sql.SparkSession
 
 class Sparker {
