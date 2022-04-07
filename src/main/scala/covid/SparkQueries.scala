@@ -30,12 +30,12 @@ class SparkQueries(spark:SparkSession) {
      * -- but on day 2 it shows 2 in deaths instead of 1
      * -- if that's the case change the SUM to MAX instead*/
     val df =spark.sql("SELECT DISTINCT " +
-      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "ObservationDate AS Date, " +
       "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
       "FROM covid19data " +
-      "WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' " +
-      "GROUP BY Month_Number,Country " +
-      "ORDER BY Month_Number").toDF()
+      "WHERE ObservationDate BETWEEN '01/22/2020' AND '04/30/2020' AND ObservationDate < '05/01/2020' " +
+      "GROUP BY Date,Country " +
+      "ORDER BY Date").toDF()
       DFWriter.Write("data/First",df)
   }
   def confirmedLast(): Unit = {
@@ -46,12 +46,12 @@ class SparkQueries(spark:SparkSession) {
     * -- but on day 2 it shows 2 in deaths instead of 1
     * -- if that's the case change the SUM to MAX instead*/
     val df=spark.sql("SELECT DISTINCT " +
-      "MONTH(from_unixtime(unix_timestamp(ObservationDate,'MM/dd/yyyy'))) AS Month_Number, " +
+      "ObservationDate AS Date, " +
       "Country_Region AS Country,SUM(Confirmed) as Confirmed,SUM(Deaths) as Deaths,SUM(Recovered) as Recovered " +
       "FROM covid19data " +
       "WHERE ObservationDate BETWEEN '02/02/2021' AND '05/02/2021' " +
-      "GROUP BY Month_Number,Country " +
-      "ORDER BY Month_Number").toDF()
+      "GROUP BY Date,Country " +
+      "ORDER BY Date").toDF()
     DFWriter.Write("data/Last",df)
   }
   def ChinaVsTheWorld(): Unit={
