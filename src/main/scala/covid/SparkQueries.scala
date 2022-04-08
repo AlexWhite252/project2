@@ -6,6 +6,11 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{col, to_date}
 import org.apache.spark.sql.types.DateType
 
+/**
+ * Main class for querying the data from the covid19 csv
+ * @param spark The active spark session
+ */
+
 class SparkQueries(spark:SparkSession) {
 
   val covid: DataFrame =spark.read.format("csv")
