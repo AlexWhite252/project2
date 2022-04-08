@@ -114,7 +114,7 @@ class SparkQueries(spark:SparkSession) {
   }
   def bottomRecovered(): Unit = {
     /*---Bottom 10 recovered across countries---*/
-    spark.sql("SELECT DISTINCT " +
+    val df=spark.sql("SELECT DISTINCT " +
       "Country_Region AS Country,MAX(Recovered) AS Recovered " +
       "FROM covid19data " +
       "WHERE Recovered>0 " +
@@ -124,7 +124,7 @@ class SparkQueries(spark:SparkSession) {
   }
   def topDeaths(): Unit = {
     /*---Top 10 deaths across countries---*/
-    spark.sql("SELECT DISTINCT " +
+    val df=spark.sql("SELECT DISTINCT " +
       "Country_Region AS Country,MAX(Deaths) AS Deaths " +
       "FROM covid19data " +
       "GROUP BY Country " +
@@ -133,7 +133,7 @@ class SparkQueries(spark:SparkSession) {
   }
   def bottomDeaths(): Unit = {
     /*---Bottom 10 deaths across countries---*/
-    spark.sql("SELECT DISTINCT " +
+    val df=spark.sql("SELECT DISTINCT " +
       "Country_Region AS Country,MAX(Deaths) AS Deaths " +
       "FROM covid19data " +
       "WHERE Deaths>0 " +
