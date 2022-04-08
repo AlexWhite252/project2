@@ -7,7 +7,7 @@ Analysis and processing of COVID-19 data using Spark
 - 10 queries
 	- (INSERT QUERIES)
 - Implement logging (with Spark)
-- Use Tableau to show trends (SOME IDEAS)
+- Use Zeppelin to show trends (SOME IDEAS)
 	- Confirmed cases in China vs other countries?
 	- Locations with most cases in given time frame?
 
@@ -18,7 +18,7 @@ Analysis and processing of COVID-19 data using Spark
 - HDFS
 - SBT
 - Scala 2.12.10
-- Tableau
+- Zeppelin
 
 ## Stretch Goals
 - (INSERT GOALS)
