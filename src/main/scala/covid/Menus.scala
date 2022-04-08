@@ -63,7 +63,7 @@ object Menus {
     } while (!quit)
   }
 
-  def DataMenu(util: SparkSession): Unit = {
+  def DataMenu(util: SparkSession): Unit = { // Decide what kind of filter you want.
     println("Filter?")
     var back = false
     do {
@@ -78,21 +78,21 @@ object Menus {
     } while (!back)
   }
 
-  def FilterMenu(util: SparkSession, filter: String): Unit = { // Really not a filter menu, just an input frame.
+  def FilterMenu(util: SparkSession, filter: String): Unit = { // Decide on a value for your filter.
     filter match {
       case "Country_Region" => {
         println("What country/region would you like to filter by?")
-        DateFilter(util, filter, readLine) // Maybe set up a verifier or interpreter for this
+        DateFilter(util, filter, readLine)
       }
       case "Province_State" => {
         println("What state/province would you like to filter by?")
-        DateFilter(util, filter, readLine) // verify readLine stuff
+        DateFilter(util, filter, readLine)
       }
       //case "" => SortMenu(util,filter,"")
     }
   }
 
-  def DateFilter(util: SparkSession, filter:String, filterNote:String): Unit= {
+  def DateFilter(util: SparkSession, filter:String, filterNote:String): Unit= { // If the user only wants data from a certain date range.
     println("Filter by date range?\n[Y/N]")
     var betw = ""
 
@@ -118,7 +118,7 @@ object Menus {
     SortMenu(util,filter,filterNote,betw)
   }
 
-  def SortMenu(util: SparkSession, filter: String, filterNote: String, dateFilt: String): Unit = {
+  def SortMenu(util: SparkSession, filter: String, filterNote: String, dateFilt: String): Unit = { // For sorting/ordering the list of data.
     var where = ""
     if (filter != "") where = s" WHERE `$filter`=='$filterNote'" // If we have a filter, set the WHERE clause.
     var sort = ""
@@ -147,10 +147,10 @@ object Menus {
     } while (acdc == "")
 
     GetQuery(util,where,sort,acdc,dateFilt)
-    //GetQuery(util, where, sort, acdc)
+    //GetQuery(util, where, sort, acdc) (old parameters)
   }
 
-  def GetQuery(util: SparkSession, where: String, sort: String, asc: String, between: String): Unit = {
+  def GetQuery(util: SparkSession, where: String, sort: String, asc: String, between: String): Unit = { // Actually do query
     var query = ""
     if(where!="") {
       if (between!="") { // filter & date range
@@ -166,8 +166,8 @@ object Menus {
       }
     }
     //println(s"$query\n") // this is for debug purposes
-    val wows = util.sql(query)
-    wows.show(false)
+    val wows = util.sql(query) // save it as a dataframe
+    wows.show(false) // show it
 
     var coco = false
     do {
@@ -175,8 +175,8 @@ object Menus {
       println("[1. Yes | 0. No]")
       readLine.toLowerCase match {
         case "1" | "y" | "yes" => {
-          val path = System.getProperty("user.dir")+"\\export\\covid19data"
-          DFWriter.Write(path,wows)
+          val path = System.getProperty("user.dir")+"\\export\\covid19data" // grab working directory, and 'export' folder within.
+          DFWriter.Write(path,wows) // good thing it's a dataframe.
           coco = true
         }
         case "0" | "n" | "no" => coco = true
