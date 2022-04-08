@@ -42,8 +42,8 @@ object Menus {
     do {
       println("[Country/Region | State/Province | None | Back]")
       readLine.toLowerCase match {
-        case "country" | "region" | "country/region" | "c/r" => FilterMenu(util, "Country/Region") // set this to what the column is called in the table
-        case "state" | "province" | "state/province" | "s/p" => FilterMenu(util, "Province/State") // set this to what the column is called in the table
+        case "country" | "region" | "country/region" | "c/r" => FilterMenu(util, "Country_Region") // set this to what the column is called in the table
+        case "state" | "province" | "state/province" | "s/p" => FilterMenu(util, "Province_State") // set this to what the column is called in the table
         case "none" => SortMenu(util, "", "") //FilterMenu(util,"")
         case "back" => back = true
         case _ => println("Input unclear.")
@@ -75,8 +75,8 @@ object Menus {
     do { // wait for a proper sort method.
       println("[Country/Region | State/Province | Date | Confirmed | Deaths | Recovered]")
       readLine.toLowerCase match {
-        case "country" | "region" | "country/region" | "c/r" => sort = " ORDER BY 'Country/Region'"
-        case "state" | "province" | "state/province" | "s/p" => sort = " ORDER BY 'Province/State'"
+        case "country" | "region" | "country/region" | "c/r" => sort = " ORDER BY 'Country_Region'"
+        case "state" | "province" | "state/province" | "s/p" => sort = " ORDER BY 'Province_State'"
         case "date" => sort = " ORDER BY ObservationDate"
         case "confirmed" => sort = " ORDER BY Confirmed"
         case "deaths" => sort = " ORDER BY Deaths"
@@ -104,14 +104,12 @@ object Menus {
     println("[as JSON | as CSV | No]") // It doesn't overwrite files yet. Will work on.
     readLine.toLowerCase match {
       case "json" | "as json" => {
-        val tempy = util.sql(query) // take the query into an rdd/df
-        val outpo = tempy.repartition(1) // repartition it so it makes only 1 file
-        outpo.write.mode(SaveMode.Overwrite).json(System.getProperty("user.dir")+"\\export\\covid19data.json") // save the file
+        val df = util.sql(query) // take the query into an rdd/df
+        DFWriter.Write("data/customQuery",df)//.json
       }
       case "csv" | "as csv" => { // repeat from json, but as a csv
-        val tempy = util.sql(query)
-        val outpo = tempy.repartition(1)
-        outpo.write.mode(SaveMode.Overwrite).csv(System.getProperty("user.dir")+"\\export\\covid19data.csv")
+        val df = util.sql(query)
+        DFWriter.Write("data/customQuery",df)//.csv
       }
       case _ => // nothing, we're leaving
     }
