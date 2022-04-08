@@ -74,6 +74,36 @@ class SparkQueries(spark:SparkSession) {
     )
     DFWriter.Write("data/ChinaVsTheWorld",df)
   }
+  def confirmedChina(): Unit = {
+    /*---Confirmed in China then other countries---*/
+    spark.sql("SELECT DISTINCT " +
+      "Country_Region AS Country,MAX(Confirmed) AS Confirmed " +
+      "FROM covid19data " +
+      "WHERE Country_Region == 'Mainland China' AND Last_Update='2021-05-03 04:20:39' " +
+      "GROUP BY Country " +
+      "UNION SELECT DISTINCT " +
+      "Country_Region as Country,MAX(Confirmed) " +
+      "FROM covid19data " +
+      "WHERE Country_Region != 'Mainland China' AND Last_Update='2021-05-03 04:20:39' " +
+      "GROUP BY Country")
+
+    /*---Confirmed in China w/ country count confirmed---*/
+    spark.sql("SELECT DISTINCT " +
+      "Country_Region AS Country,MAX(Confirmed) AS Confirmed " +
+      "FROM covid19data " +
+      "WHERE Country_Region == 'Mainland China' AND Last_Update='2021-05-03 04:20:39' " +
+      "GROUP BY Country " +
+      "UNION SELECT DISTINCT " +
+      "COUNT(Country_Region) as Country,MAX(Confirmed) " +
+      "FROM covid19data " +
+      "WHERE Country_Region != 'Mainland China' AND Last_Update='2021-05-03 04:20:39'")
+
+    /*---Sample stat---*/
+    val countries = spark.sql("SELECT DISTINCT COUNT(Country_Region) FROM covid19data WHERE Country_Region!='%China%'").head().getLong(0)
+    val confirmed = spark.sql("SELECT SUM(Confirmed) FROM covid19data WHERE Last_Update='2021-05-03 04:20:39'").head().getDouble(0)
+    val chinaCases = 1 - ((countries / confirmed) * 100)
+    //println(f"China had ${chinaCases}%.0f%% of worldwide confirmed cases")
+  }
   def topRecovered(): Unit = {
     /*---Top 10 recovered across countries---*/
     /*---Might need to alter due to large numbers (might not need SUM())?---*/
