@@ -1,10 +1,8 @@
 package covid
 
-import covid.DFWriter
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.{col, to_date}
-import org.apache.spark.sql.types.DateType
+
 import scala.io.StdIn.readLine
 
 /**

@@ -1,4 +1,9 @@
 package covid.FastDataAnalysis
+
+
+import org.apache.spark.sql.DataFrame
+
+
 class DataTableBuilder {
 
 
@@ -8,21 +13,23 @@ class DataTableBuilder {
 
   var spark = new Sparker
 
-  spark.spark().sql("")
+  //spark.spark().sql("")
 
 
-  def Data_Table(textFile:String):Unit =
+  def Data_Table():Unit =
     {
-      spark.spark().sql("Drop table if exists Covid_19_Data")
+      spark.spark().sql("Drop table if exists covid19data")
+      val covid: DataFrame =spark.spark().read.format("csv")
+        .option("delimiter", ",")
+        .option("header", "true")
+        .option("inferSchema", "true")
+        .load("covid_19_data.csv")
+      covid.createOrReplaceTempView("covid19data")
 
-      spark.spark().sql("CREATE TABLE Covid_19_Data (Sno Int, ObservationDate Date,Province_State String " +
-        "NOT NULL, Country String, Last_Update date,Confirmed Int, Deaths Int, Recovered Int)row format delimited " +
-        "fields terminated by ',' stored as textfile").show(false)
 
-      spark.spark().sql(s"LOAD DATA LOCAL INPATH '$textFile' " +
-        "INTO TABLE Covid_19_Data").show(100000,100000, false)
+      //println("Working...")
 
-      spark.spark().sql("Select * from Covid_19_Data")
+      //spark.spark().sql("Select * from covid19data")
     }
 
 def Death_Table(textFile:String):Unit=

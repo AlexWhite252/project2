@@ -1,4 +1,8 @@
 package covid.FastDataAnalysis
+
+
+
+
 import org.apache.spark.sql.SparkSession
 
 class Sparker {
@@ -12,7 +16,7 @@ class Sparker {
         .getOrCreate()
       //println("Created Spark session\n")
       spark.sparkContext.setLogLevel("ERROR")
-      return spark
+       spark
     }
 
 
