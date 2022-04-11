@@ -131,11 +131,20 @@ class SparkQueries(spark:SparkSession) {
   }
   def topDeaths(): Unit = {
     /*---Top 10 deaths across countries---*/
-    val df=spark.sql("SELECT DISTINCT " +
-      "Country_Region AS Country,MAX(Deaths) AS Deaths " +
-      "FROM covid19data " +
-      "GROUP BY Country " +
-      "ORDER BY Deaths DESC LIMIT 10").toDF()
+    spark.sql(
+      "SELECT Country_Region AS Country, MAX(Deaths) AS Deaths " +
+        "FROM covid19data " +
+        "GROUP BY Country_Region " +
+        "ORDER BY Deaths DESC LIMIT 10"
+    ).createOrReplaceTempView("topDeaths")
+    val df=spark.sql(
+      "SELECT Country_Region AS Country, ObservationDate as Date, SUM(cd.Deaths) AS Deaths " +
+        "FROM covid19data cd " +
+        "JOIN topDeaths td ON td.Country=cd.Country_Region " +
+        "GROUP BY cd.Country_Region,cd.ObservationDate " +
+        "ORDER BY ObservationDate"
+    ).toDF()
+    spark.sql("SELECT * FROM topDeaths").show()
     DFWriter.Write("data/topDeaths",df)
   }
   def bottomDeaths(): Unit = {
