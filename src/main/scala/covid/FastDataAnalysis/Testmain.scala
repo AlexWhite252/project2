@@ -1,4 +1,6 @@
-package project2.`FastDataAnalysis(WIP)`
+package covid.FastDataAnalysis
+
+
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession

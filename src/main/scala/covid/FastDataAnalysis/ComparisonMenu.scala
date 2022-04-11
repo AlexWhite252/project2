@@ -1,10 +1,15 @@
-package project2.`FastDataAnalysis(WIP)`
+package covid.FastDataAnalysis
+
+
 
 import scala.collection.mutable.ListBuffer
 
 
 class ComparisonMenu {
 
+  val tb = new DataTableBuilder
+  tb.dataTableCovid.Data_Table()
+  val q = new queries
 
   object ComparisonMenu {
 
@@ -29,13 +34,12 @@ class ComparisonMenu {
 
     def compInit(): Unit = {
       //Creates a spark dataset
-      val tb = new DataTableBuilder
-      val q = new queries
+
       //Choices 1 2 and 3. Made so everywhere where you choose any of these it changes everywhere.
       val choice1: String = "Cases"
       val choice2: String = "Deaths"
       val choice3: String = "Recovered"
-      tb.dataTableCovid.Data_Table()
+
       val comparison = new CountryVsCountry
 
       var count: Int = 0
@@ -108,7 +112,7 @@ class ComparisonMenu {
                   count = count + 1
                 }
                 else {
-                  println("Please Choose Either 'Y' or 'No'")
+                  println("Please Choose Either 'Y' or 'N'")
                 }
 
               }
@@ -191,13 +195,88 @@ class ComparisonMenu {
       //println(s"This Is the country Name $country2Input")
     }
 
+    def CountryListInit(): Unit ={
+      var count = 0
+      var userInputSolo = new String
+      var userInputList = new String
+      var Listnum = 0
+
+      println("In this Menu you can choose 1 country and find the % difference between a group of countries")
+      while(count <1)
+        {
+          val manyMenuAuthen = scala.io.StdIn.readLine("Would you like to contine? \nWould you like to continue? \n'Y' to continue or 'N' to return\nEntry:")
+          if(manyMenuAuthen.equalsIgnoreCase("Y"))
+            {
+
+              userInputSolo = scala.io.StdIn.readLine("Please enter first country for comparison\nEntry:")
+              CountryListTester(userInputSolo)
+
+
+            }
+          else if(manyMenuAuthen.equalsIgnoreCase("N"))
+            {
+              println("Okay! Returning")
+              count = count + 1
+            }
+          else
+            {
+              println("Please Choose Either 'Y' or 'N'")
+            }
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+    }
 
     def CountryListBuilder(): Unit = {
+      var countries = new ListBuffer[String]
+      var userInput = new String
+      var count = 0
+      var testInput = new String
+      while(count < 1)
+        {
+          userInput = scala.io.StdIn.readLine("Would you like to add a Country to comparison group?\n'Y' to continue or 'N' to return\nEntry:")
+          if(userInput.equalsIgnoreCase("Y"))
+            {
+              testInput = scala.io.StdIn.readLine("Please add a country from the list to test.")
+              CountryListTester(testInput)
+            }
+          else if(userInput.equalsIgnoreCase("N"))
+            {
+              count = count + 1
+            }
+          else
+            {
+              println("Please Choose Either 'Y' or 'N'")
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+    }
+
+    def CountryListTester(cName:String): Unit = {
       var done: Boolean = false
       while (!done) {
         try {
-          val test = scala.io.StdIn.readLine("Choose Another Country \n")
-          var c = new CountryBuilder(test)
+          var c = new CountryBuilder(cName)
           done = true
         }
         catch {

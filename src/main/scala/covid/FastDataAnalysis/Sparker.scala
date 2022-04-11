@@ -1,4 +1,6 @@
-package project2.`FastDataAnalysis(WIP)`
+package covid.FastDataAnalysis
+
+
 
 
 import org.apache.spark.sql.SparkSession

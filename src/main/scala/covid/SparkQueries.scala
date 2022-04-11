@@ -1,10 +1,8 @@
 package covid
 
-import covid.DFWriter
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.{col, to_date}
-import org.apache.spark.sql.types.DateType
+
 import scala.io.StdIn.readLine
 
 /**
@@ -27,7 +25,7 @@ class SparkQueries(spark:SparkSession) {
     .option("delimiter", ",")
     .option("header", "true")
     .option("inferSchema", "true")
-    .load("data/covid_19_data.csv").select(
+    .load("covid_19_data.csv").select(
     col("SNo"),col("Province_State"),col("Country_Region"),col("Confirmed"),
     col("Deaths"),col("Recovered"),
     to_date(col("ObservationDate"),"MM/dd/yyyy").as("ObservationDate"))
