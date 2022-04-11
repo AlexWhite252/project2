@@ -27,7 +27,7 @@ class DataTableBuilder {
       covid.createOrReplaceTempView("covid19data")
 
 
-      println("Working...")
+      //println("Working...")
 
       //spark.spark().sql("Select * from covid19data")
     }

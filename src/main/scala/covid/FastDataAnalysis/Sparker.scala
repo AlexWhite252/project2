@@ -16,7 +16,7 @@ class Sparker {
         .getOrCreate()
       //println("Created Spark session\n")
       spark.sparkContext.setLogLevel("ERROR")
-      return spark
+       spark
     }
 
 

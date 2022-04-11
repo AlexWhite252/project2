@@ -54,7 +54,7 @@ object Menus {
         case "8"=> sq.bottomDeaths()
         case "9"=> sq.bottomConfirmed()
         case "10" => DataMenu(util)
-        case "11" => comp.ComparisonMenu.compHome()
+        case "11" => comp.ComparisonMenu.CompHome()
         case "quit" => quit = true
         case _ => println("Input unclear")
       }
