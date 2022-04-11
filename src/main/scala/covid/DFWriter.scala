@@ -47,6 +47,26 @@ object DFWriter{
     println("Done!")
   }
   def JSON(path: String, df: DataFrame): Unit={
+    val printer = new PrintWriter(path+".json")
+    println(s"Saving results to $path...")
+    val columns = df.columns
+    val arr = df.collect()
+    var i = 0
+    var y = 0
+    printer.println("[")
+    printer.println("{")
+    arr.foreach(x =>{
+      printer.print(s"${columns(i)}: ${arr(y)}")
+      if(i != 0 && i % columns.length == 0 && y != arr.length-1)printer.println("},\n{")
+      else if(y == arr.length-1)printer.println("}")
+      else printer.println(",")
+      if(i==columns.length-1) i=0
+      else i +=1
+      y +=1
+    })
+    printer.println("]")
+    printer.close()
+    println("Done!")
 
   }
 

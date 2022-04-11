@@ -13,3 +13,4 @@ data/TopDeaths.csv
 data/TopRecovered.csv
 data/First.csv
 data/Last.csv
+data/topConfirmed.json
