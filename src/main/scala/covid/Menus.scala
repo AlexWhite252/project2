@@ -23,6 +23,7 @@ object Menus {
     - Exporting functional (although messy, because spark messy??)
    */
 
+  //The main menu, lets user select from pre-defined queries or create a custom query
   def MainMenu(util: SparkSession): Unit = {
     val sq = new SparkQueries(util)
     println("Welcome")
@@ -57,6 +58,8 @@ object Menus {
     } while (!quit)
   }
 
+  //Menu for creating custom queries
+  //Allows user to select their desired location filter
   def DataMenu(util: SparkSession): Unit = {
     println("Filter?")
     var back = false
@@ -72,20 +75,22 @@ object Menus {
     } while (!back)
   }
 
+  //Takes user input for the location filter
   def FilterMenu(util: SparkSession, filter: String): Unit = { // Really not a filter menu, just an input frame.
     filter match {
       case "Country_Region" => {
         println("What country/region would you like to filter by?")
-        DateFilter(util, filter, readLine) // Maybe set up a verifier or interpreter for this
+        DateFilter(util, filter, readLine.capitalize) // Maybe set up a verifier or interpreter for this
       }
       case "Province_State" => {
         println("What state/province would you like to filter by?")
-        DateFilter(util, filter, readLine) // verify readLine stuff
+        DateFilter(util, filter, readLine.capitalize) // verify readLine stuff
       }
       //case "" => SortMenu(util,filter,"")
     }
   }
 
+  //Allows user to filter by a range of dates
   def DateFilter(util: SparkSession, filter:String, filterNote:String): Unit= {
     println("Filter by date range?\n[Y/N]")
     var betw = ""
@@ -112,6 +117,7 @@ object Menus {
     SortMenu(util,filter,filterNote,betw)
   }
 
+  //Allows user to choose how to sort the query output
   def SortMenu(util: SparkSession, filter: String, filterNote: String, dateFilt: String): Unit = {
     var where = ""
     if (filter != "") where = s" WHERE `$filter`=='$filterNote'" // If we have a filter, set the WHERE clause.
@@ -144,6 +150,9 @@ object Menus {
     //GetQuery(util, where, sort, acdc)
   }
 
+  //Builds a SQL query from passed arguments
+  //Runs the SQL query
+  //Allows the user to write the query to a file
   def GetQuery(util: SparkSession, where: String, sort: String, asc: String, between: String): Unit = {
     var query = ""
     if(where!="") {
