@@ -16,7 +16,7 @@ import java.io.PrintWriter
  * Saves a DataFrame to a single file instead of in multiple parts
  */
 
-object DFWriter{
+class DFWriter(path: String){
 
   /**
    * @param path  Desired filepath
@@ -35,7 +35,7 @@ object DFWriter{
     println("Done!")
   }
   def CSV(path: String, df: DataFrame): Unit={
-    val printer = new PrintWriter(path+".csv")
+    val printer = new PrintWriter(this.path+"/"+path+".csv")
     println(s"Saving results to $path...")
 
     //Prints the column names to be used as headers
@@ -47,7 +47,7 @@ object DFWriter{
     println("Done!")
   }
   def JSON(path: String, df: DataFrame): Unit={
-    val printer = new PrintWriter(path+".json")
+    val printer = new PrintWriter(this.path+"/"+path+".json")
     println(s"Saving results to $path...")
     val columns = df.columns
     val arr = df.collect().mkString.replaceAll("\\[","").replaceAll("\\]",",").split(",")

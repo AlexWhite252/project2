@@ -2,24 +2,7 @@ package covid.FastDataAnalysis
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 
-object Testmain {
-
-
-
-  def main(args: Array[String]): Unit = {
-
-    Logger.getLogger("org").setLevel(Level.ERROR)
-
-    System.setProperty("hadoop.home.dir", "C:\\hadoop")
-    val spark = SparkSession
-      .builder
-      .appName("IGDB query")
-      .config("spark.master", "local[*]")
-      .enableHiveSupport()
-      .getOrCreate()
-    println("Created Spark session\n")
-    spark.sparkContext.setLogLevel("ERROR")
-
+class Testmain(spark: SparkSession) {
 
   //spark.sql("Drop table if exists covid19data")
 
@@ -105,8 +88,6 @@ compUI()
       spark.sql("SELECT DISTINCT Country_Region AS Country,SUM(Deaths) AS Deaths FROM covid19data WHERE Deaths>0 AND Last_Update='2021-05-03 04:20:39' GROUP BY Country_Region ORDER BY Deaths ASC LIMIT 10").show()
 
 **/
-
-  }
 
 
 

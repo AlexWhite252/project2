@@ -13,6 +13,9 @@ object project2{
       .getOrCreate()
     println("Created Spark session\n")
     spark.sparkContext.setLogLevel("ERROR")
-    Menus.MainMenu(spark)
+    val dfw = new DFWriter(args(0))
+    val sq = new SparkQueries(spark,dfw,args(0))
+    val menu = new Menus(spark,dfw,sq)
+    menu.MainMenu(spark)
   }
 }

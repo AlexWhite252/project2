@@ -4,7 +4,7 @@ import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import scala.io.StdIn.readLine
 
-object Menus {
+class Menus(spark: SparkSession,dfw :DFWriter,sq:SparkQueries) {
   /* this exists for my own testing purpose
 
   def main(args: Array[String]): Unit = {
@@ -24,7 +24,6 @@ object Menus {
    */
 
   def MainMenu(util: SparkSession): Unit = {
-    val sq = new SparkQueries(util)
     println("Welcome")
     var quit = false
     do { // waiting until valid input
@@ -167,11 +166,11 @@ object Menus {
     readLine.toLowerCase match {
       case "json" | "as json" => {
         val df = util.sql(query) // take the query into an rdd/df
-        DFWriter.JSON("data/customQuery",df)//.json
+        dfw.JSON("data/customQuery",df)//.json
       }
       case "csv" | "as csv" => { // repeat from json, but as a csv
         val df = util.sql(query)
-        DFWriter.CSV("data/customQuery",df)//.csv
+        dfw.CSV("/customQuery",df)//.csv
       }
       case _ => // nothing, we're leaving
     }
