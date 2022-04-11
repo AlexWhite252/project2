@@ -24,14 +24,35 @@ object Menus {
    */
 
   def MainMenu(util: SparkSession): Unit = {
-    println("Welcome.")
+    val sq = new SparkQueries(util)
+    println("Welcome")
     var quit = false
     do { // waiting until valid input
-      println("[Data | Quit]")
+      println("Please select an option:" +
+        "\n [1] Cases from January 2020 to April 2020" +
+        "\n [2] Cases from February 2021 to May 2021" +
+        "\n [3] Cases in China compared to the rest of the world" +
+        "\n [4] Timeline of the top ten countries with the highest recovery rate" +
+        "\n [5] Timeline of the top ten countries with the highest mortality rate" +
+        "\n [6] Timeline of the top ten countries with the highest number of confirmed cases" +
+        "\n [7] Top ten countries with the lowest recovery rate" +
+        "\n [8] Top ten countries with the lowest mortality rate" +
+        "\n [9] Top ten countries with the lowest number of confirmed cases" +
+        "\n[10] Custom Query" +
+        "\n[Quit]\n")
       readLine.toLowerCase match { // go off of input
-        case "data" => DataMenu(util)
+        case "1"=> sq.confirmedFirst()
+        case "2"=> sq.confirmedLast()
+        case "3"=> sq.ChinaVsTheWorld()
+        case "4"=> sq.topRecovered()
+        case "5"=> sq.topDeaths()
+        case "6"=> sq.topConfirmed()
+        case "7"=> sq.bottomRecovered()
+        case "8"=> sq.bottomDeaths()
+        case "9"=> sq.bottomConfirmed()
+        case "10" => DataMenu(util)
         case "quit" => quit = true
-        case _ => println("Input unclear.")
+        case _ => println("Input unclear")
       }
     } while (!quit)
   }
@@ -71,7 +92,7 @@ object Menus {
     var sort = ""
     var acdc = ""
 
-    println("\nWhat would you like to sort by?\nDefault is Date.")
+    println("\nWhat would you like to sort by?\nDefault is Date")
     do { // wait for a proper sort method.
       println("[Country/Region | State/Province | Date | Confirmed | Deaths | Recovered]")
       readLine.toLowerCase match {
@@ -81,7 +102,7 @@ object Menus {
         case "confirmed" => sort = " ORDER BY Confirmed"
         case "deaths" => sort = " ORDER BY Deaths"
         case "recovered" => sort = " ORDER BY Recovered"
-        case _ => println("Input unclear.")
+        case _ => println("Input unclear")
       }
     } while (sort == "")
     do { // Up or down?
@@ -89,7 +110,7 @@ object Menus {
       readLine.toLowerCase match {
         case "a" | "as" | "asc" => acdc = " ASC"
         case "d" | "de" | "des" | "desc" => acdc = " DESC"
-        case _ => println("Input unclear.")
+        case _ => println("Input unclear")
       }
     } while (acdc == "")
     GetQuery(util, where, sort, acdc)

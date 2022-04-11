@@ -41,6 +41,7 @@ class SparkQueries(spark:SparkSession) {
       "WHERE ObservationDate BETWEEN '2020-01-22' AND '2020-04-30' " +
       "GROUP BY Date,Country " +
       "ORDER BY Date").toDF()
+    df.show()
     DFWriter.Write("data/First",df)
   }
   def confirmedLast(): Unit = {
@@ -52,6 +53,7 @@ class SparkQueries(spark:SparkSession) {
       "WHERE ObservationDate BETWEEN '2021-02-02' AND '2021-05-02' " +
       "GROUP BY Date,Country " +
       "ORDER BY Date").toDF()
+    df.show()
     DFWriter.Write("data/Last",df)
   }
   def ChinaVsTheWorld(): Unit={
@@ -70,6 +72,7 @@ class SparkQueries(spark:SparkSession) {
         "GROUP BY Country,Date " +
         "ORDER BY Date"
     )
+    df.show()
     DFWriter.Write("data/ChinaVsTheWorld",df)
   }
   def topRecovered(): Unit = {
@@ -86,6 +89,7 @@ class SparkQueries(spark:SparkSession) {
         "GROUP BY cd.Country_Region,cd.ObservationDate " +
         "ORDER BY cd.ObservationDate"
     ).toDF()
+    spark.sql("SELECT * FROM topRecovered").show()
     DFWriter.Write("data/topRecovered",df)
   }
   def topConfirmed(): Unit={
@@ -101,6 +105,7 @@ class SparkQueries(spark:SparkSession) {
         "GROUP BY cd.Country_Region,cd.ObservationDate " +
         "ORDER BY ObservationDate"
     ).toDF()
+    spark.sql("SELECT * FROM topConfirmed").show()
     DFWriter.Write("data/topConfirmed",df)
   }
   def bottomConfirmed(): Unit={
@@ -110,6 +115,7 @@ class SparkQueries(spark:SparkSession) {
         "HAVING MAX(Confirmed) > 0 " +
         "GROUP BY Country_Region " +
         "ORDER BY Confirmed ASC LIMIT 10")
+    df.show()
     DFWriter.Write("data/bottomConfirmed",df)
   }
   def bottomRecovered(): Unit = {
@@ -120,6 +126,7 @@ class SparkQueries(spark:SparkSession) {
       "WHERE Recovered>0 " +
       "GROUP BY Country " +
       "ORDER BY Recovered ASC LIMIT 10").toDF()
+    df.show()
     DFWriter.Write("data/bottomRecovered",df)
   }
   def topDeaths(): Unit = {
@@ -139,6 +146,7 @@ class SparkQueries(spark:SparkSession) {
       "WHERE Deaths>0 " +
       "GROUP BY Country " +
       "ORDER BY Deaths ASC LIMIT 10").toDF()
+    df.show()
     DFWriter.Write("data/bottomDeaths",df)
   }
 }
