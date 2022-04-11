@@ -1,4 +1,16 @@
 target*
 metastore_db*
-.idea/modules*
 project/target*
+derby.log
+target/scala-2.11/classes/covid/project2$.class
+target/scala-2.11/classes/covid/SparkQueries$$typecreator5$1.class
+target/scala-2.11/classes/covid/SparkQueries.class
+data/old_covid_19_data.csv
+data/Year.csv
+data/ChinasSadLittleLife.csv
+data/ChinaVsTheWorld.csv
+data/TopDeaths.csv
+data/TopRecovered.csv
+data/First.csv
+data/Last.csv
+data/topConfirmed.json
