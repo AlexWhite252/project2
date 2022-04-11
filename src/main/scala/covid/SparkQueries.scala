@@ -5,6 +5,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{col, to_date}
 import org.apache.spark.sql.types.DateType
+import scala.io.StdIn.readLine
 
 /**
  * Main class for querying the data from the covid19 csv
@@ -12,6 +13,15 @@ import org.apache.spark.sql.types.DateType
  */
 
 class SparkQueries(spark:SparkSession) {
+
+  val save = (path:String, df:DataFrame) =>{
+    println("Would you like to save the file?\n[csv]\n[json]\n[no]")
+    readLine.toLowerCase match{
+      case "csv"=> DFWriter.CSV(path,df)
+      case "json"=> DFWriter.JSON(path,df)
+      case _ =>
+    }
+  }
 
   val covid: DataFrame =spark.read.format("csv")
     .option("delimiter", ",")
@@ -42,7 +52,7 @@ class SparkQueries(spark:SparkSession) {
       "GROUP BY Date,Country " +
       "ORDER BY Date").toDF()
     df.show()
-    DFWriter.Write("data/First",df)
+    save("data/First",df)
   }
   def confirmedLast(): Unit = {
     /*---Confirmed cases, deaths, recovered within LAST 4 months---*/
@@ -54,7 +64,7 @@ class SparkQueries(spark:SparkSession) {
       "GROUP BY Date,Country " +
       "ORDER BY Date").toDF()
     df.show()
-    DFWriter.Write("data/Last",df)
+    save("data/Last",df)
   }
   def ChinaVsTheWorld(): Unit={
     val df =spark.sql(
@@ -73,7 +83,7 @@ class SparkQueries(spark:SparkSession) {
         "ORDER BY Date"
     )
     df.show()
-    DFWriter.Write("data/ChinaVsTheWorld",df)
+    save("data/ChinaVsTheWorld",df)
   }
   def topRecovered(): Unit = {
     /*---Top 10 recovered across countries---*/
@@ -90,7 +100,7 @@ class SparkQueries(spark:SparkSession) {
         "ORDER BY cd.ObservationDate"
     ).toDF()
     spark.sql("SELECT * FROM topRecovered").show()
-    DFWriter.Write("data/topRecovered",df)
+    save("data/topRecovered",df)
   }
   def topConfirmed(): Unit={
     spark.sql(
@@ -106,7 +116,7 @@ class SparkQueries(spark:SparkSession) {
         "ORDER BY ObservationDate"
     ).toDF()
     spark.sql("SELECT * FROM topConfirmed").show()
-    DFWriter.Write("data/topConfirmed",df)
+    save("data/topConfirmed",df)
   }
   def bottomConfirmed(): Unit={
     val df=spark.sql(
@@ -116,7 +126,7 @@ class SparkQueries(spark:SparkSession) {
         "GROUP BY Country_Region " +
         "ORDER BY Confirmed ASC LIMIT 10")
     df.show()
-    DFWriter.Write("data/bottomConfirmed",df)
+    save("data/bottomConfirmed",df)
   }
   def bottomRecovered(): Unit = {
     /*---Bottom 10 recovered across countries---*/
@@ -127,7 +137,7 @@ class SparkQueries(spark:SparkSession) {
       "GROUP BY Country " +
       "ORDER BY Recovered ASC LIMIT 10").toDF()
     df.show()
-    DFWriter.Write("data/bottomRecovered",df)
+    save("data/bottomRecovered",df)
   }
   def topDeaths(): Unit = {
     /*---Top 10 deaths across countries---*/
@@ -145,7 +155,7 @@ class SparkQueries(spark:SparkSession) {
         "ORDER BY ObservationDate"
     ).toDF()
     spark.sql("SELECT * FROM topDeaths").show()
-    DFWriter.Write("data/topDeaths",df)
+    save("data/topDeaths",df)
   }
   def bottomDeaths(): Unit = {
     /*---Bottom 10 deaths across countries---*/
@@ -156,7 +166,7 @@ class SparkQueries(spark:SparkSession) {
       "GROUP BY Country " +
       "ORDER BY Deaths ASC LIMIT 10").toDF()
     df.show()
-    DFWriter.Write("data/bottomDeaths",df)
+    save("data/bottomDeaths",df)
   }
 }
 

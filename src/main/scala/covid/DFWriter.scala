@@ -34,5 +34,20 @@ object DFWriter{
     printer.close()
     println("Done!")
   }
+  def CSV(path: String, df: DataFrame): Unit={
+    val printer = new PrintWriter(path+".csv")
+    println(s"Saving results to $path...")
+
+    //Prints the column names to be used as headers
+    printer.println(df.columns.mkString(","))
+
+    //Collects the DataFrame and splits it by making a newline and removing the brackets
+    printer.println(df.collect.mkString("\n").replaceAll("\\[|\\]",""))
+    printer.close()
+    println("Done!")
+  }
+  def JSON(path: String, df: DataFrame): Unit={
+
+  }
 
 }
