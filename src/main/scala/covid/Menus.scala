@@ -74,13 +74,13 @@ object Menus {
 
   def FilterMenu(util: SparkSession, filter: String): Unit = {
     filter match {
-      case "Country/Region" => {
+      case "Country_Region" => {
         println("What country/region would you like to filter by?")
-        SortMenu(util, filter, readLine) // Maybe set up a verifier or interpreter for this
+        SortMenu(util, filter, readLine.capitalize) // Maybe set up a verifier or interpreter for this
       }
-      case "Province/State" => {
+      case "Province_State" => {
         println("What state/province would you like to filter by?")
-        SortMenu(util, filter, readLine) // verify readLine stuff
+        SortMenu(util, filter, readLine.capitalize) // verify readLine stuff
       }
       //case "" => SortMenu(util,filter,"")
     }
