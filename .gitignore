@@ -16,3 +16,4 @@ data/Last.csv
 data/topConfirmed.json
 data/First.json
 data/customQuery.csv
+*.crc
