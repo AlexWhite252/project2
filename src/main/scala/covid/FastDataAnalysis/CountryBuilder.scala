@@ -1,4 +1,4 @@
-package project2.`FastDataAnalysis(WIP)`
+package covid.FastDataAnalysis
 
 
 class CountryBuilder(name:String) {

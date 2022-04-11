@@ -1,6 +1,7 @@
 package covid
 
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import covid.FastDataAnalysis.ComparisonMenu
+import org.apache.spark.sql.SparkSession
 
 import scala.io.StdIn.readLine
 
@@ -25,6 +26,7 @@ object Menus {
 
   def MainMenu(util: SparkSession): Unit = {
     val sq = new SparkQueries(util)
+    val comp = new ComparisonMenu
     println("Welcome")
     var quit = false
     do { // waiting until valid input
@@ -38,7 +40,8 @@ object Menus {
         "\n [7] Top ten countries with the lowest recovery rate" +
         "\n [8] Top ten countries with the lowest mortality rate" +
         "\n [9] Top ten countries with the lowest number of confirmed cases" +
-        "\n[10] Custom Query" +
+        "\n [10] Custom Query" +
+        "\n [11] Comparison"+
         "\n[Quit]\n")
       readLine.toLowerCase match { // go off of input
         case "1"=> sq.confirmedFirst()
@@ -51,6 +54,7 @@ object Menus {
         case "8"=> sq.bottomDeaths()
         case "9"=> sq.bottomConfirmed()
         case "10" => DataMenu(util)
+        case "11" => comp.ComparisonMenu.compHome()
         case "quit" => quit = true
         case _ => println("Input unclear")
       }

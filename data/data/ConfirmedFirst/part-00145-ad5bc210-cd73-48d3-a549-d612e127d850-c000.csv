@@ -1,0 +1,9 @@
+Month_As_Number,Year,Country,Confirmed,Deaths,Recovered
+3,2020,Samoa,0,0,0
+4,2020,Samoa,0,0,0
+4,2021,Samoa,3,0,2
+3,2020,San Marino,236,26,13
+4,2020,San Marino,563,41,69
+4,2021,San Marino,5060,90,4909
+4,2020,Sao Tome and Principe,8,0,4
+4,2021,Sao Tome and Principe,2301,35,2239

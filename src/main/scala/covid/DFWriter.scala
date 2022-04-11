@@ -8,7 +8,7 @@ package covid
 */
 
 
-import org.apache.spark.sql.{DataFrame, DataFrameWriter, Dataset, SaveMode}
+import org.apache.spark.sql.DataFrame
 
 import java.io.PrintWriter
 
