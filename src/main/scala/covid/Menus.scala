@@ -61,76 +61,117 @@ object Menus {
     println("Filter?")
     var back = false
     do {
-      println("[Country/Region | State/Province | None | Back]")
+      println("[1. Country/Region | 2. State/Province | 5. None | 0. Back]")
       readLine.toLowerCase match {
-        case "country" | "region" | "country/region" | "c/r" => FilterMenu(util, "Country_Region") // set this to what the column is called in the table
-        case "state" | "province" | "state/province" | "s/p" => FilterMenu(util, "Province_State") // set this to what the column is called in the table
-        case "none" => SortMenu(util, "", "") //FilterMenu(util,"")
-        case "back" => back = true
+        case "1" | "country" | "region" | "country/region" | "c/r" => FilterMenu(util, "Country_Region") // set this to what the column is called in the table
+        case "2" | "state" | "province" | "state/province" | "s/p" => FilterMenu(util, "Province_State") // set this to what the column is called in the table
+        case "5" | "none" => DateFilter(util, "", "") //FilterMenu(util,"")
+        case "0" | "back" => back = true
         case _ => println("Input unclear.")
       }
     } while (!back)
   }
 
-  def FilterMenu(util: SparkSession, filter: String): Unit = {
+  def FilterMenu(util: SparkSession, filter: String): Unit = { // Really not a filter menu, just an input frame.
     filter match {
-      case "Country/Region" => {
+      case "Country_Region" => {
         println("What country/region would you like to filter by?")
-        SortMenu(util, filter, readLine) // Maybe set up a verifier or interpreter for this
+        DateFilter(util, filter, readLine) // Maybe set up a verifier or interpreter for this
       }
-      case "Province/State" => {
+      case "Province_State" => {
         println("What state/province would you like to filter by?")
-        SortMenu(util, filter, readLine) // verify readLine stuff
+        DateFilter(util, filter, readLine) // verify readLine stuff
       }
       //case "" => SortMenu(util,filter,"")
     }
   }
 
-  def SortMenu(util: SparkSession, filter: String, filterNote: String): Unit = {
+  def DateFilter(util: SparkSession, filter:String, filterNote:String): Unit= {
+    println("Filter by date range?\n[Y/N]")
+    var betw = ""
+
+    do {
+      readLine.toLowerCase match {
+        case "y" => // get a date range
+        {
+          println("Enter a start date; YYYY-MM-DD")
+          val st = readLine
+          println("Enter an end date; YYYY-MM-DD")
+          val en = readLine
+          betw = s" ObservationDate BETWEEN '$st' AND '$en'"
+        }
+        case "n" => // do not
+        {
+          betw = "-" // break flag
+        }
+        case _ => println("Input unclear.")
+      }
+    } while (betw=="")
+    if(betw=="-") betw="" // reset to empty
+
+    SortMenu(util,filter,filterNote,betw)
+  }
+
+  def SortMenu(util: SparkSession, filter: String, filterNote: String, dateFilt: String): Unit = {
     var where = ""
     if (filter != "") where = s" WHERE `$filter`=='$filterNote'" // If we have a filter, set the WHERE clause.
     var sort = ""
     var acdc = ""
 
-    println("\nWhat would you like to sort by?\nDefault is Date")
+    println("\nWhat would you like to sort by?\nDefault is Date.")
     do { // wait for a proper sort method.
-      println("[Country/Region | State/Province | Date | Confirmed | Deaths | Recovered]")
+      println("[1. Country/Region | 2. State/Province | 3. Date | 4. Confirmed | 5. Deaths | 6. Recovered]")
       readLine.toLowerCase match {
-        case "country" | "region" | "country/region" | "c/r" => sort = " ORDER BY 'Country_Region'"
-        case "state" | "province" | "state/province" | "s/p" => sort = " ORDER BY 'Province_State'"
-        case "date" => sort = " ORDER BY ObservationDate"
-        case "confirmed" => sort = " ORDER BY Confirmed"
-        case "deaths" => sort = " ORDER BY Deaths"
-        case "recovered" => sort = " ORDER BY Recovered"
-        case _ => println("Input unclear")
+        case "1" | "country" | "region" | "country/region" | "c/r" => sort = " ORDER BY 'Country_Region'"
+        case "2" | "state" | "province" | "state/province" | "s/p" => sort = " ORDER BY 'Province_State'"
+        case "3" | "date" => sort = " ORDER BY ObservationDate"
+        case "4" | "confirmed" => sort = " ORDER BY Confirmed"
+        case "5" | "deaths" => sort = " ORDER BY Deaths"
+        case "6" | "recovered" => sort = " ORDER BY Recovered"
+        case _ => println("Input unclear.")
       }
     } while (sort == "")
     do { // Up or down?
-      println("Ascending or Descending?\n[ASC | DESC]")
+      println("Ascending or Descending?\n[1. ASC | 2. DESC]")
       readLine.toLowerCase match {
-        case "a" | "as" | "asc" => acdc = " ASC"
-        case "d" | "de" | "des" | "desc" => acdc = " DESC"
-        case _ => println("Input unclear")
+        case "1" | "a" | "as" | "asc" => acdc = " ASC"
+        case "2" | "d" | "de" | "des" | "desc" => acdc = " DESC"
+        case _ => println("Input unclear.")
       }
     } while (acdc == "")
-    GetQuery(util, where, sort, acdc)
+
+    GetQuery(util,where,sort,acdc,dateFilt)
+    //GetQuery(util, where, sort, acdc)
   }
 
-  def GetQuery(util: SparkSession, where: String, sort: String, asc: String): Unit = {
-    val query = s"SELECT * FROM covid19data$where$sort$asc" // SELECT * FROM covid19data WHERE filter=filterSet ORDER BY column ASC
-    println(s"$query\n") // this is for debug purposes
-    util.sql(query).show(false)
-
+  def GetQuery(util: SparkSession, where: String, sort: String, asc: String, between: String): Unit = {
+    var query = ""
+    if(where!="") {
+      if (between!="") { // filter & date range
+        query = s"SELECT * FROM covid19data$where AND$between$sort$asc"
+      }else { // filter, no date range
+        query = s"SELECT * FROM covid19data$where$sort$asc"
+      }
+    } else {
+      if (between!="") { // no filter, date range
+        query = s"SELECT * FROM covid19data WHERE$between$sort$asc"
+      }else { // no filter or date range
+        query = s"SELECT * FROM covid19data$sort$asc"
+      }
+    }
+    //println(s"$query\n") // this is for debug purposes
+    val wows = util.sql(query)
+    wows.show(false)
     println("Export Query?")
     println("[as JSON | as CSV | No]") // It doesn't overwrite files yet. Will work on.
     readLine.toLowerCase match {
       case "json" | "as json" => {
         val df = util.sql(query) // take the query into an rdd/df
-        DFWriter.Write("data/customQuery",df)//.json
+        DFWriter.JSON("data/customQuery",df)//.json
       }
       case "csv" | "as csv" => { // repeat from json, but as a csv
         val df = util.sql(query)
-        DFWriter.Write("data/customQuery",df)//.csv
+        DFWriter.CSV("data/customQuery",df)//.csv
       }
       case _ => // nothing, we're leaving
     }
