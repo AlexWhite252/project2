@@ -1,5 +1,6 @@
 package project2.`FastDataAnalysis(WIP)`
 
+import java.math.{MathContext, RoundingMode}
 
 
 class CountryVsCountry() {
@@ -15,21 +16,26 @@ class CountryVsCountry() {
       var c1CompNum:BigDecimal = 0
       var c2CompNum:BigDecimal = 0
       var comp:BigDecimal = 0
+      var m = new MathContext(4,RoundingMode.HALF_UP)
         while(Count < 1) {
           if (CompareOn == "Deaths") {
 
             c1CompNum = c1.Country.getDeaths()
             c2CompNum = c2.Country.getDeaths()
-
-              comp = (c1CompNum / c2CompNum) * 100
-
+          try {
+            comp = (c1CompNum / c2CompNum) * 100
+          }
+            catch
+            {
+              case zero:ArithmeticException=> println("Divided By Zero")
+            }
             if(c1CompNum > c2CompNum)
               {
-              output = s"When comparing $CompareOn: $c1Name has $comp% more $CompareOn than $c2Name"
+              output = s"When comparing $CompareOn: $c1Name has ${comp.round(m)}% more $CompareOn than $c2Name"
               }
             else if(c1CompNum<c2CompNum)
               {
-              output = s"When comparing $CompareOn: $c1Name has $comp% less $CompareOn than $c2Name"
+              output = s"When comparing $CompareOn: $c1Name has ${comp.round(m)}% less $CompareOn than $c2Name"
               }
             else if(c1CompNum == c2CompNum)
               {
@@ -48,15 +54,21 @@ class CountryVsCountry() {
 
             c1CompNum = c1.Country.getRecovered()
             c2CompNum = c2.Country.getRecovered()
-            comp = (c1CompNum / c2CompNum) * 100
+            try {
+              comp = (c1CompNum / c2CompNum) * 100
+            }
+            catch
+              {
+                case zero:ArithmeticException=> println("Divided By Zero")
+              }
 
             if(c1CompNum > c2CompNum)
             {
-              output = s"When comparing $CompareOn: $c1Name has $comp% more $CompareOn than $c2Name"
+              output = s"When comparing $CompareOn: $c1Name has ${comp.round(m)}% more $CompareOn than $c2Name"
             }
             else if(c1CompNum<c2CompNum)
             {
-              output = s"When comparing $CompareOn: $c1Name has $comp% less $CompareOn than $c2Name"
+              output = s"When comparing $CompareOn: $c1Name has ${comp.round(m)}% less $CompareOn than $c2Name"
             }
             else if(c1CompNum == c2CompNum)
             {
@@ -69,21 +81,21 @@ class CountryVsCountry() {
 
             //output = s"When comparing $CompareOn: $c1Name has $comp% against $c2Name"
             Count = Count + 1
-            println(s"$c1Name: Number of Recovered ${c1.Country.getRecovered()}  \n $c2Name: Number of Recovered ${c2.Country.getRecovered()}")
+            println(s"$c1Name: Number of Recovered ${c1.Country.getRecovered()}  \n$c2Name: Number of Recovered ${c2.Country.getRecovered()}")
           }
           else if (CompareOn == "Cases") {
             c1CompNum = c1.Country.getCases()
             c2CompNum = c2.Country.getCases()
             comp = (c1CompNum / c2CompNum) * 100
-
+            comp.precision
 
             if(c1CompNum > c2CompNum)
             {
-              output = s"When comparing $CompareOn: $c1Name has $comp% more $CompareOn than $c2Name"
+              output = s"When comparing $CompareOn: $c1Name has ${comp.round(m)}% more $CompareOn than $c2Name"
             }
             else if(c1CompNum<c2CompNum)
             {
-              output = s"When comparing $CompareOn: $c1Name has $comp% less $CompareOn than $c2Name"
+              output = s"When comparing $CompareOn: $c1Name has ${comp.round(m)}% less $CompareOn than $c2Name"
             }
             else if(c1CompNum == c2CompNum)
             {
@@ -107,12 +119,38 @@ class CountryVsCountry() {
 
 
       }
-  def compare(Country1:String,Countries:List[String],CompareOn:String):Unit =
+  def compare(Country1:String,countries:List[String],compareOn:String):Unit =
     {
       val c1 = Country1
-      val countries = Countries
+
       val countryIndex:Int = countries.length
       var countriesName= new String
+      var total:Int = 0
+
+      for(country <-countries)
+        {
+          var c = new CountryBuilder(country)
+          if(compareOn == "Deaths")
+            {
+              total = total + c.Country.getDeaths()
+            }
+          else if(compareOn == "Recovered")
+            {
+              total = total + c.Country.getRecovered()
+            }
+          else if(compareOn == "Cases")
+            {
+              total = total + c.Country.getCases()
+            }
+          else
+            {
+
+            }
+        }
+
+
+
+
       //countries.foreach(countryNames => String)
     }
 
