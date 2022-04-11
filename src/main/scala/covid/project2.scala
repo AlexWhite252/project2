@@ -13,7 +13,6 @@ object project2{
       .getOrCreate()
     println("Created Spark session\n")
     spark.sparkContext.setLogLevel("ERROR")
-    //val sq = new SparkQueries(spark)
     Menus.MainMenu(spark)
   }
 }

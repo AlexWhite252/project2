@@ -50,18 +50,24 @@ object DFWriter{
     val printer = new PrintWriter(path+".json")
     println(s"Saving results to $path...")
     val columns = df.columns
-    val arr = df.collect()
+    val arr = df.collect().mkString.replaceAll("\\[","").replaceAll("\\]",",").split(",")
     var i = 0
     var y = 0
     printer.println("[")
     printer.println("{")
     arr.foreach(x =>{
-      printer.print(s"${columns(i)}: ${arr(y)}")
-      if(i != 0 && i % columns.length == 0 && y != arr.length-1)printer.println("},\n{")
-      else if(y == arr.length-1)printer.println("}")
-      else printer.println(",")
-      if(i==columns.length-1) i=0
-      else i +=1
+      //printer.print(s"${columns(i)}: \""+s"${arr(y)}"+"\"")
+      if(y!=arr.length) {
+        printer.print("\"" + s"${columns(i)}" + "\": " + "\"" + s"${arr(y)}" + "\"")
+      }
+      if(i !=columns.length-1){printer.println(",");i+=1}
+      else{
+        printer.println(s"}${if(y!=arr.length-1)",\n{" else ""}");i=0
+      }
+      //if(i != 0 && i % columns.length == 0 && y != arr.length-1)printer.println("},\n{")
+      //else if(i % columns.length != 0) printer.println(",")
+      //if(i==columns.length-1){printer.println(s"}${if(y!=arr.length-1)","}");i=0}
+      //else i +=1
       y +=1
     })
     printer.println("]")
