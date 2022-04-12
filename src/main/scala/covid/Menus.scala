@@ -5,7 +5,7 @@ import org.apache.spark.sql.SparkSession
 
 import scala.io.StdIn.readLine
 
-object Menus {
+class Menus(util: SparkSession,dfw: DFWriter,sq: SparkQueries) {
   /* this exists for my own testing purpose
 
   def main(args: Array[String]): Unit = {
@@ -25,8 +25,7 @@ object Menus {
    */
 
   def MainMenu(util: SparkSession): Unit = {
-    val sq = new SparkQueries(util)
-    val comp = new ComparisonMenu
+    val comp = new ComparisonMenu(util)
     println("Welcome")
     var quit = false
     do { // waiting until valid input
@@ -78,11 +77,11 @@ object Menus {
 
   def FilterMenu(util: SparkSession, filter: String): Unit = {
     filter match {
-      case "Country/Region" => {
+      case "Country_Region" => {
         println("What country/region would you like to filter by?")
         SortMenu(util, filter, readLine) // Maybe set up a verifier or interpreter for this
       }
-      case "Province/State" => {
+      case "Province_State" => {
         println("What state/province would you like to filter by?")
         SortMenu(util, filter, readLine) // verify readLine stuff
       }
@@ -122,7 +121,7 @@ object Menus {
 
   def GetQuery(util: SparkSession, where: String, sort: String, asc: String): Unit = {
     val query = s"SELECT * FROM covid19data$where$sort$asc" // SELECT * FROM covid19data WHERE filter=filterSet ORDER BY column ASC
-    println(s"$query\n") // this is for debug purposes
+    //println(s"$query\n") // this is for debug purposes
     util.sql(query).show(false)
 
     println("Export Query?")
@@ -130,11 +129,11 @@ object Menus {
     readLine.toLowerCase match {
       case "json" | "as json" => {
         val df = util.sql(query) // take the query into an rdd/df
-        DFWriter.Write("data/customQuery",df)//.json
+        dfw.JSON("customQuery",df)//.json
       }
       case "csv" | "as csv" => { // repeat from json, but as a csv
         val df = util.sql(query)
-        DFWriter.Write("data/customQuery",df)//.csv
+        dfw.CSV("customQuery",df)//.csv
       }
       case _ => // nothing, we're leaving
     }

@@ -2,18 +2,20 @@ package covid.FastDataAnalysis
 
 
 
+import org.apache.spark.sql.SparkSession
+
 import scala.collection.mutable.ListBuffer
 
 
-class ComparisonMenu {
+class ComparisonMenu(spark: SparkSession) {
 
-  val tb = new DataTableBuilder
-  tb.dataTableCovid.Data_Table()
-  val q = new queries
+  //val tb = new DataTableBuilder
+  //tb.dataTableCovid.Data_Table()
+  val q = new queries(spark)
   val choice1: String = "Cases"
   val choice2: String = "Deaths"
   val choice3: String = "Recovered"
-  val comparison = new CountryVsCountry
+  val comparison = new CountryVsCountry(spark)
 
   object ComparisonMenu {
 
@@ -25,7 +27,7 @@ class ComparisonMenu {
 
     def CompHome(): Unit = {
 
-      val homeInput = scala.io.StdIn.readLine("Welcome to Comparison Menu\nOne to One or one to Many?\n[One | Many]\n")
+      val homeInput = scala.io.StdIn.readLine("Welcome to Comparison Menu\nOne to One or One to Many?\n[One | Many]\n")
 
       if (homeInput.equalsIgnoreCase("one")) {
         CompInit()
@@ -48,7 +50,7 @@ class ComparisonMenu {
       // This variable controls the infinite nature of the menu. Essentially you'll stay in this menu until Count == 1
 
       while (count < 1) {
-        var inputUserMenu = scala.io.StdIn.readLine(s" Here you can choose 2 countries and compare them based on $choice1 | $choice2 | $choice3. \nWould you like to continue? \n'Y' to continue or 'N' to return\nEntry:")
+        var inputUserMenu = scala.io.StdIn.readLine(s"Here you can choose 2 countries and compare them based on $choice1 | $choice2 | $choice3. \nWould you like to continue? \n[Yes | No]\n")
         if (inputUserMenu == "Y" || inputUserMenu == "y") {
 
           q.selectAllCountryNames()
@@ -69,7 +71,7 @@ class ComparisonMenu {
               comparison.compare(country1Input, country2Input, choice1)
               var count2 = 0
               while (count2 < 1) {
-                var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n'Y' to continue or 'N' to return\nEntry:")
+                var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n[Yes | No]\n")
                 if (inputReturn == "Y" || inputReturn == "y") {
                   count2 = count2 + 1
                 }
@@ -87,7 +89,7 @@ class ComparisonMenu {
               comparison.compare(country1Input, country2Input, choice2)
               var count2 = 0
               while (count2 < 1) {
-                var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n'Y' to continue or 'N' to return\nEntry:")
+                var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n[Yes | No]\n")
 
                 if (inputReturn == "Y" || inputReturn == "y") {
                   count2 = count2 + 1
@@ -105,7 +107,7 @@ class ComparisonMenu {
               comparison.compare(country1Input, country2Input, choice1)
               var count2 = 0
               while (count2 < 1) {
-                var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n'Y' to continue or 'N' to return\nEntry:")
+                var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n[Yes | No]\n")
                 if (inputReturn == "Y" || inputReturn == "y") {
                   count2 = count2 + 1
                 }
@@ -119,6 +121,7 @@ class ComparisonMenu {
 
               }
             }
+            case _=>
           }
         }
         else if (inputUserMenu == "N" || inputUserMenu == "n") {
@@ -152,9 +155,9 @@ class ComparisonMenu {
     def Country1tester(): Unit = {
       var countryInput = new String
       try {
-        val test = scala.io.StdIn.readLine("\nChoose a country from list \nEntry: ")
+        val test = scala.io.StdIn.readLine("\nChoose a country from list\n")
 
-        val c1Test = new CountryBuilder(test)
+        val c1Test = new CountryBuilder(test,spark)
         c1Test.Country
 
         country1Input = test
@@ -173,8 +176,8 @@ class ComparisonMenu {
 
     def Country2tester(): Unit = {
       try {
-        val test = scala.io.StdIn.readLine("\nChoose a country from list \nEntry: ")
-        val c1Test = new CountryBuilder(test)
+        val test = scala.io.StdIn.readLine("\nChoose a country from list\n")
+        val c1Test = new CountryBuilder(test,spark)
         c1Test.Country
         country2Input = test
 
@@ -199,7 +202,7 @@ class ComparisonMenu {
 
       println("In this Menu you can choose 1 country and find the % difference between a group of countries")
       while (count < 1) {
-        val manyMenuAuthen = scala.io.StdIn.readLine("Would you like to continue? \n'Y' to continue or 'N' to return\nEntry:")
+        val manyMenuAuthen = scala.io.StdIn.readLine("Would you like to continue? \n[Yes | No]\n")
         if (manyMenuAuthen.equalsIgnoreCase("Y")) {
           q.selectAllCountryNames()
           Country1tester()
@@ -229,16 +232,16 @@ class ComparisonMenu {
         var userCount = 0
 
         while (userCount < 1) {
-          userInput = scala.io.StdIn.readLine("\n\nWould you like to add a Country to the comparison group?\n'Y' to continue or 'N' to return\nEntry:")
+          userInput = scala.io.StdIn.readLine("\n\nWould you like to add a Country to the comparison group?\n[Yes | No]\n")
           if (userInput.equalsIgnoreCase("Y")) {
 
             var count2 = 0
             while (count2 < 1) {
-              val userinput = scala.io.StdIn.readLine("\nEnter Country\nEntry:")
+              val userinput = scala.io.StdIn.readLine("\nEnter Country\n")
               val testingCountry = CountryListTester(userinput)
               if (testingCountry) {
 
-                val c = new CountryBuilder(userinput)
+                val c = new CountryBuilder(userinput,spark)
                 countryObjectList += c
 
                 for (country <- countryObjectList) {
@@ -271,7 +274,7 @@ class ComparisonMenu {
       println(s"Testing: $cName against database")
 
       try {
-        var c = new CountryBuilder(cName)
+        var c = new CountryBuilder(cName,spark)
       }
       catch {
         case wrongCountryName: NullPointerException => {
@@ -285,8 +288,8 @@ class ComparisonMenu {
     }
 
     def CountryListComparison(): Unit = {
-      val comparisonPredicate = scala.io.StdIn.readLine(s"\nChoose  |$choice1| |$choice2| |$choice3| \nEntry: ")
-      val compmulti = new CountryVsCountry
+      val comparisonPredicate = scala.io.StdIn.readLine(s"\nChoose  |$choice1| |$choice2| |$choice3| \n")
+      val compmulti = new CountryVsCountry(spark)
       comparison.compare(country1Input, countryObjectList, comparisonPredicate)
     }
 

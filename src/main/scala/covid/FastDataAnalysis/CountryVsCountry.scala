@@ -1,19 +1,21 @@
 package covid.FastDataAnalysis
 
 
+import org.apache.spark.sql.SparkSession
+
 import java.math.{MathContext, RoundingMode}
 import scala.collection.mutable.ListBuffer
 
 
-class CountryVsCountry() {
+class CountryVsCountry(spark: SparkSession) {
 
 
 
   def compare(Country1:String,Country2:String,CompareOn:String):Unit = {
       var Count:Int = 0
       var output = new String
-      val c1 = new CountryBuilder(Country1)
-      val c2 = new CountryBuilder(Country2)
+      val c1 = new CountryBuilder(Country1,spark)
+      val c2 = new CountryBuilder(Country2,spark)
       val c1Name = c1.Country.getName
       val c2Name = c2.Country.getName
       var c1CompNum:BigDecimal = 0
@@ -127,7 +129,7 @@ class CountryVsCountry() {
 
   def compare(Country1:String,countryObjectList:ListBuffer[CountryBuilder],comparisonPredicate:String):Unit =
     {
-      val c1 = new CountryBuilder(Country1)
+      val c1 = new CountryBuilder(Country1,spark)
       var c1name = new String
       var subtotal:BigDecimal = 0
       var finalTotal:BigDecimal = 0

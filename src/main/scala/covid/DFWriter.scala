@@ -22,21 +22,9 @@ class DFWriter(path: String){
    * @param path  Desired filepath
    * @param df  DataFrame to be saved
    */
-  def Write(path:String, df: DataFrame): Unit={
-    val printer = new PrintWriter(path+".csv")
-    println(s"Saving results to $path...")
-
-    //Prints the column names to be used as headers
-    printer.println(df.columns.mkString(","))
-
-    //Collects the DataFrame and splits it by making a newline and removing the brackets
-    printer.println(df.collect.mkString("\n").replaceAll("\\[|\\]",""))
-    printer.close()
-    println("Done!")
-  }
   def CSV(path: String, df: DataFrame): Unit={
     val printer = new PrintWriter(this.path+"/"+path+".csv")
-    println(s"Saving results to $path...")
+    println(s"Saving results to ${this.path}/$path...")
 
     //Prints the column names to be used as headers
     printer.println(df.columns.mkString(","))
@@ -48,7 +36,7 @@ class DFWriter(path: String){
   }
   def JSON(path: String, df: DataFrame): Unit={
     val printer = new PrintWriter(this.path+"/"+path+".json")
-    println(s"Saving results to $path...")
+    println(s"Saving results to ${this.path}/$path...")
     val columns = df.columns
     val arr = df.collect().mkString.replaceAll("\\[","").replaceAll("\\]",",").split(",")
     var i = 0
