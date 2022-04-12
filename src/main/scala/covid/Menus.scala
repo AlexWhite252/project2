@@ -64,12 +64,13 @@ class Menus(util: SparkSession,dfw: DFWriter,sq: SparkQueries) {
     println("Filter?")
     var back = false
     do {
-      println("[Country/Region | State/Province | None | Back]")
+      println("[1. Country/Region | 2. State/Province | 3. Date | 4. None | 0. Back]")
       readLine.toLowerCase match {
-        case "country" | "region" | "country/region" | "c/r" => FilterMenu(util, "Country_Region") // set this to what the column is called in the table
-        case "state" | "province" | "state/province" | "s/p" => FilterMenu(util, "Province_State") // set this to what the column is called in the table
-        case "none" => SortMenu(util, "", "") //FilterMenu(util,"")
-        case "back" => back = true
+        case "1" | "country" | "region" | "country/region" | "c/r" => FilterMenu(util, "Country_Region") // set this to what the column is called in the table
+        case "2" | "state" | "province" | "state/province" | "s/p" => FilterMenu(util, "Province_State") // set this to what the column is called in the table
+        case "3" | "date" => DateFilter(util, "", "") //FilterMenu(util,"")
+        case "4" | "none" => SortMenu(util,"","","")
+        case "0" | "back" => back = true
         case _ => println("Input unclear.")
       }
     } while (!back)
