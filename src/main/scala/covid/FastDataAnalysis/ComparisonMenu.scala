@@ -51,7 +51,7 @@ class ComparisonMenu(spark: SparkSession) {
 
       while (count < 1) {
         var inputUserMenu = scala.io.StdIn.readLine(s"Here you can choose 2 countries and compare them based on $choice1 | $choice2 | $choice3. \nWould you like to continue? \n[Yes | No]\n")
-        if (inputUserMenu == "Y" || inputUserMenu == "y") {
+        if (inputUserMenu.equalsIgnoreCase("yes")) {
 
           q.selectAllCountryNames()
 
@@ -72,10 +72,10 @@ class ComparisonMenu(spark: SparkSession) {
               var count2 = 0
               while (count2 < 1) {
                 var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n[Yes | No]\n")
-                if (inputReturn == "Y" || inputReturn == "y") {
+                if (inputReturn.equalsIgnoreCase("yes")) {
                   count2 = count2 + 1
                 }
-                else if (inputReturn == "N" || inputReturn == "n") {
+                else if (inputReturn.equalsIgnoreCase("no")) {
                   count2 = count2 + 1
                   count = count + 1
                 }
@@ -91,10 +91,10 @@ class ComparisonMenu(spark: SparkSession) {
               while (count2 < 1) {
                 var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n[Yes | No]\n")
 
-                if (inputReturn == "Y" || inputReturn == "y") {
+                if (inputReturn.equalsIgnoreCase("yes")) {
                   count2 = count2 + 1
                 }
-                else if (inputReturn == "N" || inputReturn == "n") {
+                else if (inputReturn.equalsIgnoreCase("no")) {
                   count2 = count2 + 1
                   count = count + 1
                 }
@@ -108,15 +108,15 @@ class ComparisonMenu(spark: SparkSession) {
               var count2 = 0
               while (count2 < 1) {
                 var inputReturn = scala.io.StdIn.readLine("Make another comparison? \n[Yes | No]\n")
-                if (inputReturn == "Y" || inputReturn == "y") {
+                if (inputReturn.equalsIgnoreCase("yes")) {
                   count2 = count2 + 1
                 }
-                else if (inputReturn == "N" || inputReturn == "n") {
+                else if (inputReturn.equalsIgnoreCase("no")) {
                   count2 = count2 + 1
                   count = count + 1
                 }
                 else {
-                  println("Please Choose Either 'Y' or 'N'")
+                  println("Please Choose Either 'Yes' or 'No'")
                 }
 
               }
@@ -124,11 +124,11 @@ class ComparisonMenu(spark: SparkSession) {
             case _=>
           }
         }
-        else if (inputUserMenu == "N" || inputUserMenu == "n") {
+        else if (inputUserMenu.equalsIgnoreCase("no")) {
           count = count + 1
         }
         else {
-          println("Please Enter 'Y' or 'N' ")
+          println("Please Enter 'Yes' or 'No' ")
         }
       }
 
@@ -158,10 +158,10 @@ class ComparisonMenu(spark: SparkSession) {
         val test = scala.io.StdIn.readLine("\nChoose a country from list\n")
 
         val c1Test = new CountryBuilder(test,spark)
-        c1Test.Country
+
 
         country1Input = test
-
+        println(s"${c1Test.Country.ToString}")
       }
       catch {
         case wrongCountryName: NullPointerException => {
@@ -203,18 +203,19 @@ class ComparisonMenu(spark: SparkSession) {
       println("In this Menu you can choose 1 country and find the % difference between a group of countries")
       while (count < 1) {
         val manyMenuAuthen = scala.io.StdIn.readLine("Would you like to continue? \n[Yes | No]\n")
-        if (manyMenuAuthen.equalsIgnoreCase("Y")) {
+        if (manyMenuAuthen.equalsIgnoreCase("Yes")) {
           q.selectAllCountryNames()
           Country1tester()
+
           CountryListBuilder()
           CountryListComparison()
         }
-        else if (manyMenuAuthen.equalsIgnoreCase("N")) {
+        else if (manyMenuAuthen.equalsIgnoreCase("No")) {
           println("Okay! Returning")
           count = count + 1
         }
         else {
-          println("Please Choose Either 'Y' or 'N'")
+          println("Please Choose Either 'Yes' or 'No'")
         }
       }
     }
@@ -233,12 +234,16 @@ class ComparisonMenu(spark: SparkSession) {
 
         while (userCount < 1) {
           userInput = scala.io.StdIn.readLine("\n\nWould you like to add a Country to the comparison group?\n[Yes | No]\n")
-          if (userInput.equalsIgnoreCase("Y")) {
+          if (userInput.equalsIgnoreCase("Yes")) {
 
             var count2 = 0
             while (count2 < 1) {
               val userinput = scala.io.StdIn.readLine("\nEnter Country\n")
-              val testingCountry = CountryListTester(userinput)
+              var testingCountry: Boolean = false
+              testingCountry=CountryListTester(userinput)
+
+
+
               if (testingCountry) {
 
                 val c = new CountryBuilder(userinput,spark)
@@ -255,12 +260,12 @@ class ComparisonMenu(spark: SparkSession) {
             }
 
           }
-          else if (userInput.equalsIgnoreCase("N")) {
+          else if (userInput.equalsIgnoreCase("No")) {
             count = count + 1
             userCount = userCount + 1
           }
           else {
-            println("Please Choose Either 'Y' or 'N'")
+            println("Please Choose Either 'Yes' or 'No'")
           }
         }
 
@@ -270,20 +275,26 @@ class ComparisonMenu(spark: SparkSession) {
     //Tests that each country entered within the list
     def CountryListTester(cName: String): Boolean = {
 
-      var exist: Boolean = true
+      var exist: Boolean = false
       println(s"Testing: $cName against database")
 
       try {
-        var c = new CountryBuilder(cName,spark)
+        //spark.sql(s"Select * from covid19data where Country_Region == '$cName'").show(false)
+        val Total_Cases:Int= spark.sql(s"Select MAX(Confirmed) from covid19data where Country_Region ='$cName'").head().getInt(0)
+        exist = true
+
+        //var c = new CountryBuilder(cName,spark)
       }
       catch {
+
         case wrongCountryName: NullPointerException => {
           println("Country Not Found")
           exist = false
-          println(exist)
+          //println(exist)
         }
+          exist = false
       }
-      println(exist)
+     // println(exist)
       exist
     }
 

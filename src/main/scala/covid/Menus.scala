@@ -53,7 +53,7 @@ class Menus(util: SparkSession,dfw: DFWriter,sq: SparkQueries) {
         case "8"=> sq.bottomDeaths()
         case "9"=> sq.bottomConfirmed()
         case "10" => DataMenu(util)
-        case "11" => comp.ComparisonMenu.CompHome()
+        case "11" => comp.ComparisonMenu.CountryListInit()
         case "quit" => quit = true
         case _ => println("Input unclear")
       }

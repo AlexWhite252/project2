@@ -23,6 +23,8 @@ class CountryVsCountry(spark: SparkSession) {
       var comp:BigDecimal = 0
 
       var m = new MathContext(4,RoundingMode.HALF_UP)
+
+
         while(Count < 1) {
           if (CompareOn == "Deaths") {
 
@@ -130,14 +132,20 @@ class CountryVsCountry(spark: SparkSession) {
   def compare(Country1:String,countryObjectList:ListBuffer[CountryBuilder],comparisonPredicate:String):Unit =
     {
       val c1 = new CountryBuilder(Country1,spark)
-      var c1name = new String
+      var c1name = (s"|$Country1|")
       var subtotal:BigDecimal = 0
       var finalTotal:BigDecimal = 0
       var country1Total:BigDecimal = 0
 
       var m = new MathContext(4,RoundingMode.HALF_UP)
 
-      var countriesNames:String = "|"
+      var countriesNames:String = ""
+
+      println(s"Country 1: ${c1.Country.getName} \n List of countries:")
+
+      for (country <- countryObjectList) {
+        println(country.Country.ToString)
+      }
 
       if(comparisonPredicate.equalsIgnoreCase("Cases")) {
         var counterCountryList = countryObjectList.length
@@ -150,6 +158,7 @@ class CountryVsCountry(spark: SparkSession) {
 
         }
         country1Total =c1.Country.getCases
+
         try {
           finalTotal = (country1Total / subtotal * 100)
         }
@@ -170,6 +179,7 @@ class CountryVsCountry(spark: SparkSession) {
 
         }
         country1Total =c1.Country.getDeaths
+
         try {
           finalTotal = (country1Total / subtotal * 100)
         }
@@ -190,7 +200,7 @@ class CountryVsCountry(spark: SparkSession) {
           println(s"This is the subtotal: $subtotal")
         }
         country1Total =c1.Country.getRecovered
-         c1name = c1.Country.getName
+
         try {
           finalTotal = (country1Total / subtotal * 100)
         }
@@ -206,9 +216,10 @@ class CountryVsCountry(spark: SparkSession) {
 
       }
 
+      countriesNames = countriesNames + "|"
       if(country1Total< subtotal)
       {
-        println(s"When comparing total $comparisonPredicate of $c1name to  the total $comparisonPredicate of $countriesNames,  $c1name had ${finalTotal.round(m)}% less deaths than $countriesNames")
+        println(s"When comparing total $comparisonPredicate of $c1name to  the total $comparisonPredicate of $countriesNames,  $c1name had ${finalTotal.round(m)}% less $comparisonPredicate than $countriesNames")
       }
       else if(country1Total > subtotal)
       {
