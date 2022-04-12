@@ -63,7 +63,7 @@ class CountryVsCountry(spark: SparkSession) {
             c1CompNum = c1.Country.getRecovered
             c2CompNum = c2.Country.getRecovered
             try {
-              comp = (c1CompNum / c2CompNum) * 100
+              comp = ((c1CompNum.abs-c2CompNum.abs) / ((c1CompNum +c2CompNum)/2) )* 100
             }
             catch
               {
@@ -94,8 +94,13 @@ class CountryVsCountry(spark: SparkSession) {
           else if (CompareOn == "Cases") {
             c1CompNum = c1.Country.getCases
             c2CompNum = c2.Country.getCases
-            comp = (c1CompNum / c2CompNum) * 100
-            comp.precision
+            try {
+              comp = ((c1CompNum.abs-c2CompNum.abs) / ((c1CompNum +c2CompNum)/2) )* 100
+            }
+            catch
+            {
+              case zero:ArithmeticException=> println("Divided By Zero")
+            }
 
             if(c1CompNum > c2CompNum)
             {
@@ -160,7 +165,7 @@ class CountryVsCountry(spark: SparkSession) {
         country1Total =c1.Country.getCases
 
         try {
-          finalTotal = (country1Total / subtotal * 100)
+          finalTotal = (((country1Total).abs - (subtotal.abs)) / ((country1Total +subtotal)/2) * 100)
         }
         catch
         {
@@ -181,7 +186,7 @@ class CountryVsCountry(spark: SparkSession) {
         country1Total =c1.Country.getDeaths
 
         try {
-          finalTotal = (country1Total / subtotal * 100)
+          finalTotal = (((country1Total).abs - (subtotal.abs)) / ((country1Total +subtotal)/2) * 100)
         }
         catch
         {
@@ -202,7 +207,7 @@ class CountryVsCountry(spark: SparkSession) {
         country1Total =c1.Country.getRecovered
 
         try {
-          finalTotal = (country1Total / subtotal * 100)
+          finalTotal = (((country1Total).abs - (subtotal.abs)) / ((country1Total +subtotal)/2) * 100)
         }
         catch
         {

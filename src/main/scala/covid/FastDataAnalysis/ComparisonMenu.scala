@@ -180,7 +180,7 @@ class ComparisonMenu(spark: SparkSession) {
         val c1Test = new CountryBuilder(test,spark)
         c1Test.Country
         country2Input = test
-
+        println(s"${c1Test.Country.ToString}")
       }
       catch {
         case wrongCountryName: NullPointerException => {
